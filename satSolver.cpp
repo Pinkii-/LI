@@ -17,7 +17,7 @@ vector<int> modelStack;
 uint indexOfNextLitToPropagate;
 uint decisionLevel;
 
-vector<pair<vector<pair<bool,vector<int> >*,pair<bool,vector<int> >*> > magic;
+vector<pair<vector<pair<bool,vector<int> >*>,vector<pair<bool,vector<int> >*> > > magic;
 // magic[0].first  -> clausulas donde el literal 0 aparecerá positivamente
 // magic[0].first[0].first  -> " + nos dice si la clausula 0 del literal 0 ya no hace falta mirarlo.
 
