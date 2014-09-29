@@ -11,11 +11,15 @@ using namespace std;
 
 uint numVars;
 uint numClauses;
-vector<vector<int> > clauses;
+vector<pair<bool,vector<int> > > clauses;
 vector<int> model;
 vector<int> modelStack;
 uint indexOfNextLitToPropagate;
 uint decisionLevel;
+
+vector<pair<vector<pair<bool,vector<int> >*,pair<bool,vector<int> >*> > magic;
+// magic[0].first  -> clausulas donde el literal 0 aparecerá positivamente
+// magic[0].first[0].first  -> " + nos dice si la clausula 0 del literal 0 ya no hace falta mirarlo.
 
 
 void readClauses( ){
@@ -32,7 +36,14 @@ void readClauses( ){
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
         int lit;
-        while (cin >> lit and lit != 0) clauses[i].push_back(lit);
+        pair <bool,int> aux;
+        while (cin >> lit and lit != 0) {
+            aux.first = false;
+            aux.second = lit;
+            clauses[i].push_back(aux);
+            if (lit > 0) magic[lit-1].first.push_back(&clauses[i]);
+            else magic[lit-1].second.push_back(&clauses[i]);
+        }
     }
 }
 
