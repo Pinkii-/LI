@@ -33,15 +33,15 @@ void readClauses( ){
     string aux;
     cin >> aux >> numVars >> numClauses;
     clauses.resize(numClauses);
-    clausesPos.resize(numVars);
-    clausesNeg.resize(numVars);
+    clausesPos.resize(numVars+1);
+    clausesNeg.resize(numVars+1i);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
         int lit;
         while (cin >> lit and lit != 0) {
             clauses[i].push_back(lit);
-            if (lit > 0) clausesPos[lit-1].push_back(i);
-            else clausesNeg[-lit-1].push_back(i);
+            if (lit > 0) clausesPos[lit].push_back(i);
+            else clausesNeg[-lit].push_back(i);
         }
     }
 }
@@ -67,17 +67,37 @@ void setLiteralToTrue(int lit){
 bool propagateGivesConflict ( ) {
     while ( indexOfNextLitToPropagate < modelStack.size() ) {
         ++indexOfNextLitToPropagate;
-        for (uint i = 0; i < numClauses; ++i) {
-            bool someLitTrue = false;
-            int numUndefs = 0;
-            int lastLitUndef = 0;
-            for (uint k = 0; not someLitTrue and k < clauses[i].size(); ++k){
-                int val = currentValueInModel(clauses[i][k]);
-                if (val == TRUE) someLitTrue = true;
-                else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[i][k]; }
+        int cdSize;
+        int ltp = modelStack[indexOfNextLitToPropagate];
+        if (model[indexOfNextLitToPropagate] == TRUE) {
+            cdSize = clausesNeg.size();
+            for (uint i = 0; i < cdSize; ++i) {
+                bool someLitTrue = false;
+                int numUndefs = 0;
+                int lastLitUndef = 0;
+                for (uint k = 0; not someLitTrue and k < clauses[clausesNeg[ltp][i]].size(); ++k){
+                    int val = currentValueInModel(clauses[clausesNeg[ltp][i]][k]);
+                    if (val == TRUE) someLitTrue = true;
+                    else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[clausesNeg[ltp][i]][k]; }
+                }
+                if (not someLitTrue and numUndefs == 0) return true; // conflict! all lits false
+                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
             }
-            if (not someLitTrue and numUndefs == 0) return true; // conflict! all lits false
-            else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+        }
+        else {
+            cdSize = clausesPos.size();
+            for (uint i = 0; i < cdSize; ++i) {
+                bool someLitTrue = false;
+                int numUndefs = 0;
+                int lastLitUndef = 0;
+                for (uint k = 0; not someLitTrue and k < clauses[clausesPos[ltp][i]].size(); ++k){
+                    int val = currentValueInModel(clauses[clausesPos[ltp][i]][k]);
+                    if (val == TRUE) someLitTrue = true;
+                    else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[clausesPos[ltp][i]][k]; }
+                }
+                if (not someLitTrue and numUndefs == 0) return true; // conflict! all lits false
+                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+            }
         }
     }
     return false;
