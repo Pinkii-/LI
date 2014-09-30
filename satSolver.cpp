@@ -11,10 +11,10 @@ using namespace std;
 
 uint numVars;
 uint numClauses;
-vector<pair<bool,vector<int> > > clauses;
+vector<vector<int> > clauses;
 vector<int> model;
 vector<int> modelStack;
-uint indexOfNextLitToPropagate;
+//uint indexOfNextLitToPropagate;
 uint decisionLevel;
 
 vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where the lit 1 is positive
@@ -34,7 +34,7 @@ void readClauses( ){
     cin >> aux >> numVars >> numClauses;
     clauses.resize(numClauses);
     clausesPos.resize(numVars+1);
-    clausesNeg.resize(numVars+1i);
+    clausesNeg.resize(numVars+1);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
         int lit;
@@ -49,6 +49,7 @@ void readClauses( ){
 
 
 int currentValueInModel(int lit){
+    //cout << "valueinmodel" << endl;
     if (lit >= 0) return model[lit];
     else {
         if (model[-lit] == UNDEF) return UNDEF;
@@ -58,35 +59,47 @@ int currentValueInModel(int lit){
 
 
 void setLiteralToTrue(int lit){
+    //cout << "litotru" << endl;
     modelStack.push_back(lit);
     if (lit > 0) model[lit] = TRUE;
     else model[-lit] = FALSE;
 }
 
 
-bool propagateGivesConflict ( ) {
-    while ( indexOfNextLitToPropagate < modelStack.size() ) {
-        ++indexOfNextLitToPropagate;
+bool propagateGivesConflict (vector<int> litsToPropagate) {
+    //cout << "propagate" << endl;
+    for (int l = 0; l < litsToPropagate.size(); ++l) {
         int cdSize;
-        int ltp = modelStack[indexOfNextLitToPropagate];
-        if (model[indexOfNextLitToPropagate] == TRUE) {
-            cdSize = clausesNeg.size();
+        int lit = litsToPropagate[l];
+        int ltp = abs(lit);
+        //cout << "vamos a propagar " << ltp << endl;
+        if (model[abs(lit)] == TRUE) {
+            cdSize = clausesNeg[ltp].size();
+            //cout << "El siz es: " << cdSize << endl;
             for (uint i = 0; i < cdSize; ++i) {
+                //cout << i << endl;
                 bool someLitTrue = false;
                 int numUndefs = 0;
                 int lastLitUndef = 0;
+                //cout << "Estamos mirando la clausula " << clausesNeg[ltp][i] << "y está compuesto por lo siguiente:"<< endl;
                 for (uint k = 0; not someLitTrue and k < clauses[clausesNeg[ltp][i]].size(); ++k){
+                    //cout << clauses[clausesNeg[ltp][i]][k] << " ";
                     int val = currentValueInModel(clauses[clausesNeg[ltp][i]][k]);
                     if (val == TRUE) someLitTrue = true;
                     else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[clausesNeg[ltp][i]][k]; }
                 }
+                //cout << endl;
                 if (not someLitTrue and numUndefs == 0) return true; // conflict! all lits false
-                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+                else if (not someLitTrue and numUndefs == 1) {
+                    setLiteralToTrue(lastLitUndef);
+                    litsToPropagate.push_back(lastLitUndef);
+                }
             }
         }
         else {
-            cdSize = clausesPos.size();
+            cdSize = clausesPos[ltp].size();
             for (uint i = 0; i < cdSize; ++i) {
+                //cout << i << endl;
                 bool someLitTrue = false;
                 int numUndefs = 0;
                 int lastLitUndef = 0;
@@ -96,7 +109,10 @@ bool propagateGivesConflict ( ) {
                     else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[clausesPos[ltp][i]][k]; }
                 }
                 if (not someLitTrue and numUndefs == 0) return true; // conflict! all lits false
-                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+                else if (not someLitTrue and numUndefs == 1) {
+                    setLiteralToTrue(lastLitUndef);
+                    litsToPropagate.push_back(lastLitUndef);
+                }
             }
         }
     }
@@ -105,6 +121,7 @@ bool propagateGivesConflict ( ) {
 
 
 void backtrack(){
+    //cout << "backtrack" << endl;
     uint i = modelStack.size() -1;
     int lit = 0;
     while (modelStack[i] != 0){ // 0 is the DL mark
@@ -116,15 +133,18 @@ void backtrack(){
     // at this point, lit is the last decision
     modelStack.pop_back(); // remove the DL mark
     --decisionLevel;
-    indexOfNextLitToPropagate = modelStack.size();
+    //    indexOfNextLitToPropagate = modelStack.size();
     setLiteralToTrue(-lit);  // reverse last decision
 }
 
 
 // Heuristic for finding the next decision literal:
 int getNextDecisionLiteral(){
-    for (uint i = 1; i <= numVars; ++i) // stupid heuristic:
+    //cout << "NextDecisionLiteral" << endl;
+    for (uint i = 1; i <= numVars; ++i) {// stupid heuristic:
+        //cout << "el lit: " << i << " es " << model[i] << endl;
         if (model[i] == UNDEF) return i;  // returns first UNDEF var, positively
+    }
     return 0; // reurns 0 when all literals are defined
 }
 
@@ -146,7 +166,7 @@ int main(){
     clock_t t = clock();
     readClauses(); // reads numVars, numClauses and clauses
     model.resize(numVars+1,UNDEF);
-    indexOfNextLitToPropagate = 0;
+    //    indexOfNextLitToPropagate = 0;
     decisionLevel = 0;
 
     // Take care of initial unit clauses, if any
@@ -160,16 +180,20 @@ int main(){
 
     // DPLL algorithm
     while (true) {
-        while ( propagateGivesConflict() ) {
-            if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE" << endl; return 10; }
-            backtrack();
-        }
         int decisionLit = getNextDecisionLiteral();
+        //cout << decisionLit << endl;
         if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC  << " SATISFIABLE" << endl; return 20; }
         // start new decision level:
         modelStack.push_back(0);  // push mark indicating new DL
-        ++indexOfNextLitToPropagate;
+        //        ++indexOfNextLitToPropagate;
         ++decisionLevel;
         setLiteralToTrue(decisionLit);    // now push decisionLit on top of the mark
+        vector<int> aux(1);
+        aux[0] = decisionLit;
+        while ( propagateGivesConflict(aux) ) {
+            if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE" << endl; return 10; }
+            backtrack();
+        }
+
     }
 }  

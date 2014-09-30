@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <vector>
-#include <time>
+#include <time.h>
 using namespace std;
 
 #define UNDEF -1
@@ -113,7 +113,7 @@ void checkmodel(){
 }
 
 int main(){ 
-  t = clock();
+  clock_t t = clock();
   readClauses(); // reads numVars, numClauses and clauses
   model.resize(numVars+1,UNDEF);
   indexOfNextLitToPropagate = 0;  
@@ -131,11 +131,11 @@ int main(){
   // DPLL algorithm
   while (true) {
     while ( propagateGivesConflict() ) {
-      if ( decisionLevel == 0) { cout << "UNSATISFIABLE" << endl; return 10; }
+      if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE" << endl; return 10; }
       backtrack();
     }
     int decisionLit = getNextDecisionLiteral();
-    if (decisionLit == 0) { checkmodel(); cout << "SATISFIABLE" << endl; return 20; }
+    if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC << " SATISFIABLE" << endl; return 20; }
     // start new decision level:
     modelStack.push_back(0);  // push mark indicating new DL
     ++indexOfNextLitToPropagate;

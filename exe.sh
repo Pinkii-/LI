@@ -1,5 +1,5 @@
 cd random3SAT/
 for f in *
 do
-	echo "$f" "` ../SatSolver < $f`"
+	echo "$f" "` ../satSolver < $f`"
 done
