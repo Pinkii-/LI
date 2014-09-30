@@ -17,9 +17,9 @@ vector<int> modelStack;
 uint indexOfNextLitToPropagate;
 uint decisionLevel;
 
-vector<pair<vector<pair<bool,vector<int> >*>,vector<pair<bool,vector<int> >*> > > magic;
-// magic[0].first  -> clausulas donde el literal 0 aparecerá positivamente
-// magic[0].first[0].first  -> " + nos dice si la clausula 0 del literal 0 ya no hace falta mirarlo.
+vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where the lit 1 is positive
+vector<vector<int> > clausesNeg;
+
 
 
 void readClauses( ){
@@ -33,16 +33,15 @@ void readClauses( ){
     string aux;
     cin >> aux >> numVars >> numClauses;
     clauses.resize(numClauses);
+    clausesPos.resize(numVars);
+    clausesNeg.resize(numVars);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
         int lit;
-        pair <bool,int> aux;
         while (cin >> lit and lit != 0) {
-            aux.first = false;
-            aux.second = lit;
-            clauses[i].push_back(aux);
-            if (lit > 0) magic[lit-1].first.push_back(&clauses[i]);
-            else magic[lit-1].second.push_back(&clauses[i]);
+            clauses[i].push_back(lit);
+            if (lit > 0) clausesPos[lit-1].push_back(i);
+            else clausesNeg[-lit-1].push_back(i);
         }
     }
 }
