@@ -3,11 +3,14 @@
 #include <algorithm>
 #include <vector>
 #include <time.h>
+#include <set>
 using namespace std;
 
 #define UNDEF -1
 #define TRUE 1
 #define FALSE 0
+
+clock_t t;
 
 uint numVars;
 uint numClauses;
@@ -20,7 +23,9 @@ uint decisionLevel;
 vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where the lit 1 is positive
 vector<vector<int> > clausesNeg;
 
+vector<int> latencia;
 
+bool shiet( pair<int,int> a ,pair<int,int>b) {return (a.second>b.second);}
 
 void readClauses( ){
     // Skip comments
@@ -35,6 +40,7 @@ void readClauses( ){
     clauses.resize(numClauses);
     clausesPos.resize(numVars+1);
     clausesNeg.resize(numVars+1);
+    latencia.resize(numVars);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
         int lit;
@@ -44,6 +50,18 @@ void readClauses( ){
             else clausesNeg[-lit].push_back(i);
         }
     }
+    vector<pair<int,int> >vpAux(numVars+1);
+    for (int i = 1; i < numVars+1; ++i) {
+        pair <int,int> pAux;
+        pAux.first = i;
+        pAux.second = min(clausesPos[i].size(),clausesNeg[i].size());
+        vpAux[i] = pAux;
+
+    }
+    sort(vpAux.begin()+1, vpAux.end(), shiet);
+     for (int i = 1; i < numVars+1; ++i) latencia[i-1] = vpAux[i].first;
+
+
 }
 
 
@@ -133,7 +151,6 @@ void backtrack(){
     // at this point, lit is the last decision
     modelStack.pop_back(); // remove the DL mark
     --decisionLevel;
-    //    indexOfNextLitToPropagate = modelStack.size();
     setLiteralToTrue(-lit);  // reverse last decision
 }
 
@@ -141,9 +158,11 @@ void backtrack(){
 // Heuristic for finding the next decision literal:
 int getNextDecisionLiteral(){
     //cout << "NextDecisionLiteral" << endl;
-    for (uint i = 1; i <= numVars; ++i) {// stupid heuristic:
+    int lSize = latencia.size();
+    for (uint i = 0; i < lSize; ++i) {// stupid heuristic:
         //cout << "el lit: " << i << " es " << model[i] << endl;
-        if (model[i] == UNDEF) return i;  // returns first UNDEF var, positively
+        if (model[latencia[i]] == UNDEF) return i;  // returns first UNDEF var, positively
+
     }
     return 0; // reurns 0 when all literals are defined
 }
@@ -154,38 +173,29 @@ void checkmodel(){
         for (int j = 0; not someTrue and j < clauses[i].size(); ++j)
             someTrue = (currentValueInModel(clauses[i][j]) == TRUE);
         if (not someTrue) {
+            cout << (clock()-(float)t)/CLOCKS_PER_SEC << endl;
             cout << "Error in model, clause is not satisfied:";
-            for (int j = 0; j < clauses[i].size(); ++j) cout << clauses[i][j] << " ";
+            for (int j = 0; j < clauses[i].size(); ++j) cout << clauses[i][j] << "->" << currentValueInModel(clauses[i][j]) << " ";
             cout << endl;
+
             exit(1);
         }
     }
 }
 
 int main(){ 
-    clock_t t = clock();
+    t = clock();
     readClauses(); // reads numVars, numClauses and clauses
     model.resize(numVars+1,UNDEF);
-    //    indexOfNextLitToPropagate = 0;
     decisionLevel = 0;
-
-    // Take care of initial unit clauses, if any
-    for (uint i = 0; i < numClauses; ++i)
-        if (clauses[i].size() == 1) {
-            int lit = clauses[i][0];
-            int val = currentValueInModel(lit);
-            if (val == FALSE) {cout << "UNSATISFIABLE" << endl; return 10;}
-            else if (val == UNDEF) setLiteralToTrue(lit);
-        }
 
     // DPLL algorithm
     while (true) {
         int decisionLit = getNextDecisionLiteral();
         //cout << decisionLit << endl;
-        if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC  << " SATISFIABLE" << endl; return 20; }
+        if (decisionLit == 0 and decisionLevel != 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC  << " SATISFIABLE" << endl; return 20; }
         // start new decision level:
         modelStack.push_back(0);  // push mark indicating new DL
-        //        ++indexOfNextLitToPropagate;
         ++decisionLevel;
         setLiteralToTrue(decisionLit);    // now push decisionLit on top of the mark
         vector<int> aux(1);
