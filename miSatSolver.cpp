@@ -20,8 +20,8 @@ vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where t
 vector<vector<int> > clausesNeg;
 vector<int> latencia;
 
-vector<vector<int> > cabronasPos;
-vector<vector<int> > cabronasNeg;
+vector<int> cabronasPos;
+vector<int> cabronasNeg;
 
 bool shiet( pair<int,int> a ,pair<int,int>b) {return (a.second>b.second);}
 
@@ -39,8 +39,8 @@ void readClauses( ){
     clauses.resize(numClauses);
     clausesPos.resize(numVars+1);
     clausesNeg.resize(numVars+1);
-    cabronasPos.resize(numVars+1);
-    cabronasNeg.resize(numVars+1);
+    cabronasPos.resize(numVars+1,0);
+    cabronasNeg.resize(numVars+1,0);
     latencia.resize(numVars);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
@@ -101,9 +101,10 @@ bool propagateGivesConflict (vector<int> litsToPropagate) {
             }
             if (not someLitTrue and numUndefs == 0) {
                 fallo = true; // conflict! all lits false
-
+                if (litsToPropagate[i] > 0) ++cabronasPos[litsToPropagate[i]];
+                else ++cabronasNeg[-litsToPropagate[i]];
             }
-            else if (not someLitTrue and numUndefs == 1) {
+            else if (not someLitTrue and numUndefs == 1 and not fallo) {
                 setLiteralToTrue(lastLitUndef);
                 litsToPropagate.push_back(lastLitUndef);
                 ++pSize;
@@ -132,12 +133,27 @@ void backtrack(){
 
 // Heuristic for finding the next decision literal:
 int getNextDecisionLiteral(){
-    int lSize = latencia.size();
-    for (uint i = 0; i < lSize; ++i) // stupid heuristic:
-        if (model[latencia[i]] == UNDEF)
-            return clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];  // returns first UNDEF var, positively
+    vector<int>posibles(0);
+    int cPSize = cabronasPos.size();
+    int maximo = 0;
+    for (uint i = 1; i < cPSize; ++i) {
+        if (cabronasPos[i] > maximo) { maximo = cabronasPos[i]; posibles.resize(0);}
+        if (cabronasPos[i] == maximo) posibles.push_back(i);
+    }
+    int cNSize = cabronasNeg.size();
+    for (uint i = 1; i < cNSize; ++i) {
+        if (cabronasNeg[i] > maximo) { maximo = cabronasNeg[i]; posibles.resize(0);}
+        if (cabronasNeg[i] == maximo) posibles.push_back(-i);
+    }
 
-    return 0; // reurns 0 when all literals are defined
+    int pSize = posibles.size();
+    cout << "Hay este numero: " << pSize << " y el maximo es " << maximo << endl;
+    for (uint i = 0; i < pSize; ++i)
+        if (model[abs(posibles[i])] == UNDEF) {cout << posibles[i] << endl;if(posibles[i]>0)cabronasPos[posibles[i]] = 0; else cabronasNeg[-posibles[i]] = 0;return posibles[i];}
+        else cout << "Este ya está definido: " << posibles[i] << endl;
+            //            return clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];  // returns first UNDEF var, positively
+
+            return 0; // reurns 0 when all literals are defined
 }
 
 void checkmodel(){
