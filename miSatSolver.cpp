@@ -20,6 +20,9 @@ vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where t
 vector<vector<int> > clausesNeg;
 vector<int> latencia;
 
+vector<vector<int> > cabronasPos;
+vector<vector<int> > cabronasNeg;
+
 bool shiet( pair<int,int> a ,pair<int,int>b) {return (a.second>b.second);}
 
 
@@ -36,6 +39,8 @@ void readClauses( ){
     clauses.resize(numClauses);
     clausesPos.resize(numVars+1);
     clausesNeg.resize(numVars+1);
+    cabronasPos.resize(numVars+1);
+    cabronasNeg.resize(numVars+1);
     latencia.resize(numVars);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
@@ -78,8 +83,9 @@ void setLiteralToTrue(int lit){
 
 
 bool propagateGivesConflict (vector<int> litsToPropagate) {
+    bool fallo = false;
     int pSize = litsToPropagate.size();
-    for(uint j = 0; j < pSize; ++j) {
+    for(uint j = 0; j < pSize and not fallo; ++j) {
         vector<int> vAux;
         if (litsToPropagate[j] > 0) vAux = clausesNeg[litsToPropagate[j]];
         else vAux = clausesPos[abs(litsToPropagate[j])];
@@ -93,7 +99,10 @@ bool propagateGivesConflict (vector<int> litsToPropagate) {
                 if (val == TRUE) someLitTrue = true;
                 else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[vAux[i]][k]; }
             }
-            if (not someLitTrue and numUndefs == 0) return true; // conflict! all lits false
+            if (not someLitTrue and numUndefs == 0) {
+                fallo = true; // conflict! all lits false
+
+            }
             else if (not someLitTrue and numUndefs == 1) {
                 setLiteralToTrue(lastLitUndef);
                 litsToPropagate.push_back(lastLitUndef);
@@ -101,7 +110,7 @@ bool propagateGivesConflict (vector<int> litsToPropagate) {
             }
         }
     }
-    return false;
+    return fallo;
 }
 
 
@@ -126,7 +135,8 @@ int getNextDecisionLiteral(){
     int lSize = latencia.size();
     for (uint i = 0; i < lSize; ++i) // stupid heuristic:
         if (model[latencia[i]] == UNDEF)
-            return clausesNeg[i].size() > clausesPos[i].size() ? -latencia[i] : latencia[i];  // returns first UNDEF var, positively
+            return clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];  // returns first UNDEF var, positively
+
     return 0; // reurns 0 when all literals are defined
 }
 
@@ -162,6 +172,7 @@ int main(){
         while ( propagateGivesConflict(litsToPropagate) ) {
             if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE" << endl; return 10; }
             backtrack();
+            litsToPropagate[0] = modelStack[modelStack.size()-1];
         }
         decisionLit = getNextDecisionLiteral();
         if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC << " SATISFIABLE" << endl; return 20; }
