@@ -16,6 +16,10 @@ satSolverSimple: satSolverSimple.cpp
 
 	g++ -O2 satSolverSimple.cpp -o satSolverSimple
 
+satSolverSimple2: satSolverSimple2.cpp
+
+	g++ -O2 satSolverSimple2.cpp -o satSolverSimple2
+
 clean:
 
-	rm satSolver resultado miSatSolver satSolverSimple
+	rm satSolver resultado miSatSolver satSolverSimple satSolverSimple2

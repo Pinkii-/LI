@@ -14,6 +14,7 @@ uint numClauses;
 vector<vector<int> > clauses;
 vector<int> model;
 vector<int> modelStack;
+uint indexOfNextLitToPropagate;
 uint decisionLevel;
 
 vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where the lit 1 is positive
@@ -24,7 +25,6 @@ vector<int> cabronasPos;
 vector<int> cabronasNeg;
 
 bool shiet( pair<int,int> a ,pair<int,int>b) {return (a.second>b.second);}
-
 
 void readClauses( ){
     // Skip comments
@@ -81,36 +81,48 @@ void setLiteralToTrue(int lit){
 }
 
 
-bool propagateGivesConflict (vector<int> litsToPropagate) {
+bool propagateGivesConflict () {
     bool fallo = false;
-    int pSize = litsToPropagate.size();
-    for(uint j = 0; j < pSize and not fallo; ++j) {
-        vector<int> vAux;
-        if (litsToPropagate[j] > 0) vAux = clausesNeg[litsToPropagate[j]];
-        else vAux = clausesPos[abs(litsToPropagate[j])];
-        int vSize = vAux.size();
-        for (uint i = 0; i < vSize; ++i) {
-            bool someLitTrue = false;
-            int numUndefs = 0;
-            int lastLitUndef = 0;
-            for (uint k = 0; not someLitTrue and k < clauses[vAux[i]].size(); ++k){
-                int val = currentValueInModel(clauses[vAux[i]][k]);
-                if (val == TRUE) someLitTrue = true;
-                else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[vAux[i]][k]; }
-            }
-            if (not someLitTrue and numUndefs == 0) {
-                fallo = true; // conflict! all lits false
-//                cout << "SOMElitTRUE" << endl;
-                if (litsToPropagate[j] > 0) ++cabronasPos[litsToPropagate[j]];
-                else ++cabronasNeg[-litsToPropagate[j]];
-//                cout << "notSOMElitTRUE" << endl;
-            }
-            else if (not someLitTrue and numUndefs == 1 and not fallo) {
-                setLiteralToTrue(lastLitUndef);
-                litsToPropagate.push_back(lastLitUndef);
-                ++pSize;
+    while ( indexOfNextLitToPropagate < modelStack.size() and not fallo) {
+        if (modelStack[indexOfNextLitToPropagate] > 0 ) {
+            int vSize = clausesNeg[modelStack[indexOfNextLitToPropagate]].size();
+            for (uint i = 0; i < vSize; ++i) {
+                bool someLitTrue = false;
+                int numUndefs = 0;
+                int lastLitUndef = 0;
+                int cSize = clauses[clausesNeg[modelStack[indexOfNextLitToPropagate]][i]].size();
+                for (uint k = 0; not someLitTrue and k < cSize; ++k){
+                    int val = currentValueInModel(clauses[clausesNeg[modelStack[indexOfNextLitToPropagate]][i]][k]);
+                    if (val == TRUE) someLitTrue = true;
+                    else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[clausesNeg[modelStack[indexOfNextLitToPropagate]][i]][k]; }
+                }
+                if (not someLitTrue and numUndefs == 0) {
+                    fallo = true; // conflict! all lits false
+                    ++cabronasPos[modelStack[indexOfNextLitToPropagate]];
+                }
+                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
             }
         }
+        else {
+            int vSize = clausesPos[abs(modelStack[indexOfNextLitToPropagate])].size();
+            for (uint i = 0; i < vSize; ++i) {
+                bool someLitTrue = false;
+                int numUndefs = 0;
+                int lastLitUndef = 0;
+                int cSize = clauses[clausesPos[abs(modelStack[indexOfNextLitToPropagate])][i]].size();
+                for (uint k = 0; not someLitTrue and k < cSize; ++k){
+                    int val = currentValueInModel(clauses[clausesPos[abs(modelStack[indexOfNextLitToPropagate])][i]][k]);
+                    if (val == TRUE) someLitTrue = true;
+                    else if (val == UNDEF){ ++numUndefs; lastLitUndef = clauses[clausesPos[abs(modelStack[indexOfNextLitToPropagate])][i]][k]; }
+                }
+                if (not someLitTrue and numUndefs == 0) {
+                    fallo = true; // conflict! all lits false
+                   ++cabronasNeg[abs(modelStack[indexOfNextLitToPropagate])];
+                }
+                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+            }
+        }
+        ++indexOfNextLitToPropagate;
     }
     return fallo;
 }
@@ -128,13 +140,13 @@ void backtrack(){
     // at this point, lit is the last decision
     modelStack.pop_back(); // remove the DL mark
     --decisionLevel;
+    indexOfNextLitToPropagate = modelStack.size();
     setLiteralToTrue(-lit);  // reverse last decision
 }
 
 
-// Heuristic for finding the next decision literal:
+// Heuristic for finding the next decision literal: So shitti :D
 int getNextDecisionLiteral(){
-//    cout << "getnext" << endl;
     int ret=-1;
     int cPSize = cabronasPos.size();
     int maximo = 0;
@@ -143,20 +155,17 @@ int getNextDecisionLiteral(){
         if (cabronasPos[i] > maximo or cabronasNeg[i] > maximo or ret==-1) { maximo = max(cabronasPos[i],cabronasNeg[i]); ret = i;}
         }
     }
-
-//    cout << ret << endl;
-
     if (ret != -1) return ret;
     else return 0;
 
-//    int pSize = posibles.size();
-//    cout << "Hay este numero: " << pSize << " y el maximo es " << maximo << "el primero es: " << posibles[0];
-//    for (uint i = 0; i < pSize; ++i)
-//        if (model[abs(posibles[i])] == UNDEF) {cout << " olakase " << endl;return posibles[i];}
-//        else cout << "Este ya está definido: " << posibles[i] << endl;
-//            //            return clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];  // returns first UNDEF var, positively
 
-//            return 0; // reurns 0 when all literals are defined
+
+
+    int lSize = latencia.size();
+    for (uint i = 0; i < lSize; ++i)
+        if (model[abs(latencia[i])] == UNDEF)
+            return clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];  // returns first UNDEF var, positively
+    return 0; // reurns 0 when all literals are defined
 }
 
 void checkmodel(){
@@ -173,32 +182,34 @@ void checkmodel(){
     }
 }
 
-int main(){
+int main(){ 
     clock_t t = clock();
     readClauses(); // reads numVars, numClauses and clauses
     model.resize(numVars+1,UNDEF);
+    indexOfNextLitToPropagate = 0;
     decisionLevel = 0;
 
-    int decisionLit = getNextDecisionLiteral();
-    modelStack.push_back(0);  // push mark indicating new DL
-    ++decisionLevel;
-    setLiteralToTrue(decisionLit);
-    vector<int> litsToPropagate(1);
-    litsToPropagate[0] = decisionLit;
+    // Take care of initial unit clauses, if any
+    for (uint i = 0; i < numClauses; ++i)
+        if (clauses[i].size() == 1) {
+            int lit = clauses[i][0];
+            int val = currentValueInModel(lit);
+            if (val == FALSE) {cout << "UNSATISFIABLE" << endl; return 10;}
+            else if (val == UNDEF) setLiteralToTrue(lit);
+        }
 
     // DPLL algorithm
     while (true) {
-        while ( propagateGivesConflict(litsToPropagate) ) {
+        while ( propagateGivesConflict() ) {
             if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE" << endl; return 10; }
             backtrack();
-            litsToPropagate[0] = modelStack[modelStack.size()-1];
         }
-        decisionLit = getNextDecisionLiteral();
+        int decisionLit = getNextDecisionLiteral();
         if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC << " SATISFIABLE" << endl; return 20; }
         // start new decision level:
         modelStack.push_back(0);  // push mark indicating new DL
+        ++indexOfNextLitToPropagate;
         ++decisionLevel;
         setLiteralToTrue(decisionLit);    // now push decisionLit on top of the mark
-        litsToPropagate[0] = decisionLit;
     }
-}
+}  
