@@ -24,6 +24,8 @@ vector<int> latencia;
 vector<int> cabronasPos;
 vector<int> cabronasNeg;
 
+int decisiones, propagaciones;
+
 bool shiet( pair<int,int> a ,pair<int,int>b) {return (a.second>b.second);}
 
 void readClauses( ){
@@ -100,7 +102,7 @@ bool propagateGivesConflict () {
                     fallo = true; // conflict! all lits false
                     ++cabronasPos[modelStack[indexOfNextLitToPropagate]];
                 }
-                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+                else if (not someLitTrue and numUndefs == 1) {setLiteralToTrue(lastLitUndef); ++propagaciones;}
             }
         }
         else {
@@ -119,7 +121,7 @@ bool propagateGivesConflict () {
                     fallo = true; // conflict! all lits false
                    ++cabronasNeg[abs(modelStack[indexOfNextLitToPropagate])];
                 }
-                else if (not someLitTrue and numUndefs == 1) setLiteralToTrue(lastLitUndef);
+                else if (not someLitTrue and numUndefs == 1) { setLiteralToTrue(lastLitUndef); ++propagaciones;}
             }
         }
         ++indexOfNextLitToPropagate;
@@ -160,6 +162,7 @@ int getNextDecisionLiteral(){
 }
 
 //int getFirstDecisionLiteral() {
+//    ++decisiones;
 //    int lSize = latencia.size();
 //    for (uint i = 0; i < lSize; ++i)
 //        if (model[abs(latencia[i])] == UNDEF)
@@ -188,27 +191,31 @@ int main(){
     model.resize(numVars+1,UNDEF);
     indexOfNextLitToPropagate = 0;
     decisionLevel = 0;
+    decisiones = 0;
+    propagaciones = 0;
 
     for (int i = 0; i < 2; ++i) {
-        int aux = clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];;
+        int aux = clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];
         modelStack.push_back(0);  // push mark indicating new DL
         ++indexOfNextLitToPropagate;
-        ++decisionLevel;
+        ++decisionLevel; ++decisiones;
         setLiteralToTrue(aux);    // now push decisionLit on top of the mark
     }
 
     // DPLL algorithm
     while (true) {
         while ( propagateGivesConflict() ) {
-            if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE" << endl; return 10; }
+            if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE    "
+                                               << "Decisiones: " << decisiones << " Propagaciones: " << propagaciones << endl; return 10; }
             backtrack();
         }
-        int decisionLit = getNextDecisionLiteral();
-        if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC << " SATISFIABLE" << endl; return 20; }
+        int decisionLit = (propagaciones == 0 ? (clausesNeg[indexOfNextLitToPropagate].size() > clausesPos[indexOfNextLitToPropagate].size() ? latencia[indexOfNextLitToPropagate] : -latencia[indexOfNextLitToPropagate] ):getNextDecisionLiteral());
+        if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC << " SATISFIABLE    "
+                                                      << "Decisiones: " << decisiones << " Propagaciones: " << propagaciones << endl; return 20; }
         // start new decision level:
         modelStack.push_back(0);  // push mark indicating new DL
         ++indexOfNextLitToPropagate;
-        ++decisionLevel;
+        ++decisionLevel;++decisiones;
         setLiteralToTrue(decisionLit);    // now push decisionLit on top of the mark
     }
 }  
