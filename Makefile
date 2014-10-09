@@ -24,7 +24,9 @@ satSolverSimple3: satSolverSimple3.cpp
 
 	g++ -O2 satSolverSimple3.cpp -o satSolverSimple3
 
-buenSat: satSolverSimple4O2 satSolverSimple4O3
+ohyeah: buenSat picosat parser execute parseamelotodaa 
+
+buenSat: satSolverSimple4O3
 
 satSolverSimple4O2: satSolverSimple4.cpp
 
@@ -37,6 +39,16 @@ satSolverSimple4O3: satSolverSimple4.cpp
 picosat: picosat-959/configure
 	./compPico.sh
 	mv picosat-959/picosat .
+
+parser: parser.java
+	javac parser.java
+
+execute: exe.sh
+	sh exe.sh > resultado
+
+parseamelotodaa: resultado
+	java parse < resultado > bonito
+
 clean:
 
-	rm satSolver resultado miSatSolver satSolverSimple satSolverSimple2 satSolverSimple3 satSolverSimple4O2 satSolverSimple4O3 picosat
+	rm satSolver resultado miSatSolver satSolverSimple satSolverSimple2 satSolverSimple3 satSolverSimple4O2 satSolverSimple4O3 picosat parser 
