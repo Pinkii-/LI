@@ -1,4 +1,4 @@
-all: satSolver
+all: buenSat picosat
 
 satSolver: satSolver.cpp
 
@@ -24,16 +24,19 @@ satSolverSimple3: satSolverSimple3.cpp
 
 	g++ -O2 satSolverSimple3.cpp -o satSolverSimple3
 
+buenSat: satSolverSimple4O2 satSolverSimple4O3
+
 satSolverSimple4O2: satSolverSimple4.cpp
 
-	g++ -O2 satSolverSimple4.cpp -o satSolverSimple4
+	g++ -O2 satSolverSimple4.cpp -o satSolverSimple4O2
 
 satSolverSimple4O3: satSolverSimple4.cpp
 
-	g++ -O3 satSolverSimple4.cpp -o satSolverSimple4
+	g++ -O3 satSolverSimple4.cpp -o satSolverSimple4O3
 
-
-
+picosat: picosat-959/configure
+	./compPico.sh
+	mv picosat-959/picosat .
 clean:
 
-	rm satSolver resultado miSatSolver satSolverSimple satSolverSimple2 satSolverSimple3 satSolverSimple4
+	rm satSolver resultado miSatSolver satSolverSimple satSolverSimple2 satSolverSimple3 satSolverSimple4O2 satSolverSimple4O3 picosat

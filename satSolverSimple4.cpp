@@ -205,13 +205,13 @@ int main(){
     // DPLL algorithm
     while (true) {
         while ( propagateGivesConflict() ) {
-            if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC << " UNSATISFIABLE    "
-                                               << "Decisiones: " << decisiones << " Propagaciones: " << propagaciones << endl; return 10; }
+            if ( decisionLevel == 0) { cout << (clock()-(float)t)/CLOCKS_PER_SEC /*<< " UNSATISFIABLE"/*    "
+                                               << "Decisiones: " << decisiones << " Propagaciones: " << propagaciones*/ << endl; return 10; }
             backtrack();
         }
         int decisionLit = (propagaciones == 0 ? (clausesNeg[indexOfNextLitToPropagate].size() > clausesPos[indexOfNextLitToPropagate].size() ? latencia[indexOfNextLitToPropagate] : -latencia[indexOfNextLitToPropagate] ):getNextDecisionLiteral());
-        if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC << " SATISFIABLE    "
-                                                      << "Decisiones: " << decisiones << " Propagaciones: " << propagaciones << endl; return 20; }
+        if (decisionLit == 0) { checkmodel(); cout << (clock()-(float)t)/CLOCKS_PER_SEC /*<< " SATISFIABLE"   "
+                                                      << "Decisiones: " << decisiones << " Propagaciones: " << propagaciones*/ << endl; return 20; }
         // start new decision level:
         modelStack.push_back(0);  // push mark indicating new DL
         ++indexOfNextLitToPropagate;
