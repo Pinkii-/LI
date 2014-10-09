@@ -24,9 +24,14 @@ satSolverSimple3: satSolverSimple3.cpp
 
 	g++ -O2 satSolverSimple3.cpp -o satSolverSimple3
 
-satSolverSimple4: satSolverSimple4.cpp
+satSolverSimple4O2: satSolverSimple4.cpp
 
 	g++ -O2 satSolverSimple4.cpp -o satSolverSimple4
+
+satSolverSimple4O3: satSolverSimple4.cpp
+
+	g++ -O3 satSolverSimple4.cpp -o satSolverSimple4
+
 
 
 clean:
