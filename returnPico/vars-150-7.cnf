@@ -1,0 +1,61 @@
+c PicoSAT SAT Solver Version 959
+c Copyright (c) 2006 - 2014 Armin Biere JKU Linz
+c gcc -Wall -Wextra -DNDEBUG -O3 -fno-strict-aliasing
+c
+c using 2 as default phase
+c
+c parsing <stdin>
+c parsed header 'p cnf 150 638'
+c initialized 150 variables
+c found 638 non trivial clauses
+c
+c random number generator seed 0
+c 
+c  seconds     variables   original    learned     agility
+c         level        used      conflicts    limit          MB
+c 
+c s   0.0   0.0   150   0.0   638     0     0     0   0.0   0.0 
+c 
+c initial reduction limit 1000 clauses
+c 
+c +   0.0  15.3   150  96.7   638   100    99  1100  11.2   0.0 
+c R   0.0  15.3   150  96.7   638   102   101  1100  11.3   0.0 
+c +   0.0  13.3   150  98.7   638   221   220  1210  19.1   0.0 
+c +   0.0  11.9   150  98.7   638   367   366  1331  23.9   0.1 
+c N   0.0  11.5   150  98.7   638   404   403  1331  25.3   0.1 
+c +   0.0  10.5   150  98.7   638   543   542  1464  28.1   0.1 
+c +   0.0   9.8   150  99.3   638   755   754  1610  29.7   0.1 
+c +   0.0   8.8   150  99.3   638  1011  1007  1771  31.7   0.1 
+c N   0.0   8.6   149  99.3   638  1154  1144  1771  32.2   0.1 
+c +   0.0   8.5   149  99.3   638  1320  1310  1948  31.1   0.1 
+c N   0.0   8.3   149  99.3   638  1454  1443  1948  32.8   0.1 
+c N   0.0   8.1   148 100.0   638  1644  1627  1948  33.2   0.1 
+c +   0.0   8.0   148 100.0   638  1693  1675  2142  33.2   0.1 
+c N   0.0   7.7   147 100.0   638  1950  1923  2142  32.2   0.1 
+c 0   0.0   7.5    93 100.0   638  2103  2053  2142  31.8   0.2 
+c 
+c  seconds     variables   original    learned     agility
+c         level        used      conflicts    limit          MB
+c 
+s UNSATISFIABLE
+c
+c 9 iterations
+c 2 restarts
+c 0 failed literals
+c 2103 conflicts
+c 2445 decisions
+c 57 fixed variables
+c 16444 learned literals
+c 25.1% deleted literals
+c 87514 propagations
+c 457492 visits
+c 100.0% variables used
+c 0.0 seconds in library
+c 4.4 megaprops/second
+c 22.9 megavisits/second
+c probing 0.0 seconds 0%
+c 1 simplifications
+c 0 reductions
+c 0.0 MB recycled
+c 0.2 MB maximally allocated
+c 0.020000 seconds total run time

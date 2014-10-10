@@ -1,4 +1,0 @@
-cd picosat-959/
-./configure -O && make
-rm ../picosat
-mv picosat ../picosat

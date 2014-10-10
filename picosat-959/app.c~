@@ -941,7 +941,7 @@ NEXT_SOLUTION:
 		    fprintf (output, "s SOLUTIONS %lld\n", sols);
 		  else {
 		    if (!time) fputs ("s UNSATISFIABLE\n", output);
-                    else fputs ("UNSATISFIABLE ", output); //MAGICTIME
+                    else fputs ("UNSATISFIABLE   ", output); //MAGICTIME
                   }
 
 		  fflush (output);
@@ -1031,7 +1031,7 @@ NEXT_SOLUTION:
 	}
       if (time) {
         fprintf (output,
-	           "%.1f \n",
+	           "%.5f \n",
 		   picosat_time_stamp () - start_time);
       }
       if (sol)

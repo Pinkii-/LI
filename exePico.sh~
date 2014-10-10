@@ -1,0 +1,5 @@
+cd random3SAT/
+for f in vars-100-*
+do
+	echo "PICOSAT $f" "$(../picosat -v < $f > ../returnPico/$f)"
+done

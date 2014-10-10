@@ -1026,7 +1026,7 @@ NEXT_SOLUTION:
 	  fputs ("c\n", output);
 	  picosat_stats (picosat);
 	  fprintf (output,
-	           "c %.1f seconds total run time\n",
+	           "c %.6f seconds total run time\n",
 		   picosat_time_stamp () - start_time);
 	}
       if (time) {
