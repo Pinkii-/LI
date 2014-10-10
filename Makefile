@@ -54,4 +54,4 @@ parseamelotodaa: salidaMiSat picoParser.sh
 
 clean:
 
-	rm satSolver resultado miSatSolver satSolverSimple satSolverSimple2 satSolverSimple3 satSolverSimple4O2 satSolverSimple4O3 picosat parser.class miniparser.class salidaMiSat salidaPicoSat 
+	rm -rf satSolver resultado miSatSolver satSolverSimple satSolverSimple2 satSolverSimple3 satSolverSimple4O2 satSolverSimple4O3 picosat parser.class miniparser.class salidaMiSat salidaPicoSat tmp/ *~
