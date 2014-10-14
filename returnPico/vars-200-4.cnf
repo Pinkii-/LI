@@ -36,13 +36,13 @@ c +   0.0   9.4   200 100.0   850  3348  2164  2850  30.6   0.2
 c +   0.0   8.9   200 100.0   850  4145  1527  3135  30.8   0.1 
 c s   0.0   8.8   199 100.0   845  4177  1056  3135  30.4   0.1 
 c N   0.0   8.8   199 100.0   845  4279  1157  3135  30.6   0.1 
-c N   0.1   8.7   199 100.0   845  4579  1456  3135  29.8   0.1 
-c +   0.1   8.6   199 100.0   845  5109  1985  3448  32.4   0.2 
+c N   0.0   8.7   199 100.0   845  4579  1456  3135  29.8   0.1 
+c +   0.0   8.6   199 100.0   845  5109  1985  3448  32.4   0.2 
 c 
 c  seconds     variables   original    learned     agility
 c         level        used      conflicts    limit          MB
 c 
-c N   0.1   8.5   198 100.0   845  5399  2268  3448  31.4   0.2 
+c N   0.0   8.5   198 100.0   845  5399  2268  3448  31.4   0.2 
 c N   0.1   8.4   198 100.0   845  5701  2569  3448  31.2   0.2 
 c N   0.1   8.4   197 100.0   845  5862  2726  3448  31.8   0.2 
 c N   0.1   8.3   196 100.0   845  6115  2969  3448  33.5   0.2 
@@ -66,11 +66,11 @@ c 307531 propagations
 c 1792140 visits
 c 100.0% variables used
 c 0.1 seconds in library
-c 4.3 megaprops/second
-c 24.9 megavisits/second
+c 5.2 megaprops/second
+c 30.4 megavisits/second
 c probing 0.0 seconds 0%
 c 2 simplifications
 c 2 reductions
 c 0.2 MB recycled
 c 0.2 MB maximally allocated
-c 0.072000 seconds total run time
+c 0.059000 seconds total run time

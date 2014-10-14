@@ -34,7 +34,7 @@ c +   0.0  10.8   200 100.0   850  2689  1508  2591  32.9   0.2
 c N   0.0  10.6   200 100.0   850  3206  2025  2591  31.5   0.2 
 c +   0.0  10.5   200 100.0   850  3348  2167  2850  31.9   0.2 
 c +   0.0  10.1   200 100.0   850  4145  1536  3135  30.8   0.2 
-c +   0.1  10.0   200 100.0   850  5109  2500  3448  30.3   0.2 
+c +   0.0  10.0   200 100.0   850  5109  2500  3448  30.3   0.2 
 c +   0.1   9.7   200 100.0   850  6275  1936  3792  30.4   0.2 
 c +   0.1   9.4   200 100.0   850  7685  3344  4171  32.2   0.2 
 c 1   0.1   9.4   200 100.0   850  7835  3493  4171  30.9   0.3 
@@ -67,11 +67,11 @@ c 379211 propagations
 c 2334420 visits
 c 100.0% variables used
 c 0.1 seconds in library
-c 4.1 megaprops/second
-c 25.4 megavisits/second
-c probing 0.0 seconds 0%
+c 5.0 megaprops/second
+c 30.7 megavisits/second
+c probing 0.0 seconds 1%
 c 1 simplifications
 c 3 reductions
 c 0.3 MB recycled
 c 0.3 MB maximally allocated
-c 0.092000 seconds total run time
+c 0.076000 seconds total run time

@@ -47,11 +47,11 @@ c 7657 propagations
 c 21394 visits
 c 96.0% variables used
 c 0.0 seconds in library
-c 0.0 megaprops/second
-c 0.0 megavisits/second
+c 3.8 megaprops/second
+c 10.7 megavisits/second
 c probing 0.0 seconds 0%
 c 1 simplifications
 c 0 reductions
 c 0.0 MB recycled
 c 0.0 MB maximally allocated
-c 0.000000 seconds total run time
+c 0.002000 seconds total run time
