@@ -21,12 +21,13 @@ vector<vector<int> > clausesPos; // clauses[0][1] give the second clause where t
 vector<vector<int> > clausesNeg;
 vector<int> latencia;
 
-vector<int> cabronasPos;
-vector<int> cabronasNeg;
+vector<int> cabronas;
 
 int decisiones, propagaciones;
 
 bool shiet( pair<int,int> a ,pair<int,int>b) {return (a.second>b.second);}
+
+int ultraMagic;
 
 void readClauses( ){
     // Skip comments
@@ -41,8 +42,7 @@ void readClauses( ){
     clauses.resize(numClauses);
     clausesPos.resize(numVars+1);
     clausesNeg.resize(numVars+1);
-    cabronasPos.resize(numVars+1,0);
-    cabronasNeg.resize(numVars+1,0);
+    cabronas.resize(numVars+1,0);
     latencia.resize(numVars);
     // Read clauses
     for (uint i = 0; i < numClauses; ++i) {
@@ -82,10 +82,15 @@ void setLiteralToTrue(int lit){
     else model[-lit] = FALSE;
 }
 
+void didYouLikeIt() {
+    int cPSize = cabronas.size();
+    for (uint i = 1; i < cPSize; ++i) cabronas[i] = cabronas[i]/2;
+}
 
 bool propagateGivesConflict () {
     bool fallo = false;
     while ( indexOfNextLitToPropagate < modelStack.size() and not fallo) {
+        while (ultraMagic > 1000) {ultraMagic -= 1000; didYouLikeIt();}
         if (modelStack[indexOfNextLitToPropagate] > 0 ) {
             int vSize = clausesNeg[modelStack[indexOfNextLitToPropagate]].size();
             for (uint i = 0; i < vSize; ++i) {
@@ -100,9 +105,9 @@ bool propagateGivesConflict () {
                 }
                 if (not someLitTrue and numUndefs == 0) {
                     fallo = true; // conflict! all lits false
-                    ++cabronasPos[modelStack[indexOfNextLitToPropagate]];
+                    ++cabronas[modelStack[indexOfNextLitToPropagate]];
                 }
-                else if (not someLitTrue and numUndefs == 1) {setLiteralToTrue(lastLitUndef); ++propagaciones;}
+                else if (not someLitTrue and numUndefs == 1) {setLiteralToTrue(lastLitUndef); ++propagaciones;++ultraMagic;}
             }
         }
         else {
@@ -119,9 +124,9 @@ bool propagateGivesConflict () {
                 }
                 if (not someLitTrue and numUndefs == 0) {
                     fallo = true; // conflict! all lits false
-                   ++cabronasNeg[abs(modelStack[indexOfNextLitToPropagate])];
+                   ++cabronas[abs(modelStack[indexOfNextLitToPropagate])];
                 }
-                else if (not someLitTrue and numUndefs == 1) { setLiteralToTrue(lastLitUndef); ++propagaciones;}
+                else if (not someLitTrue and numUndefs == 1) { setLiteralToTrue(lastLitUndef); ++propagaciones;++ultraMagic;}
             }
         }
         ++indexOfNextLitToPropagate;
@@ -150,11 +155,11 @@ void backtrack(){
 // Heuristic for finding the next decision literal: So shitti :D
 int getNextDecisionLiteral(){
     int ret=-1;
-    int cPSize = cabronasPos.size();
+    int cPSize = cabronas.size();
     int maximo = 0;
     for (uint i = 1; i < cPSize; ++i) {
         if (model[i] == UNDEF) {
-        if (cabronasPos[i] > maximo or cabronasNeg[i] > maximo or ret==-1) { maximo = max(cabronasPos[i],cabronasNeg[i]); ret = i;}
+        if (cabronas[i] > maximo or ret==-1) { maximo = cabronas[i]; ret = i;}
         }
     }
     if (ret != -1) return ret;
@@ -193,14 +198,15 @@ int main(){
     decisionLevel = 0;
     decisiones = 0;
     propagaciones = 0;
+    ultraMagic = 0;
 
-    for (int i = 0; i < 2; ++i) {
-        int aux = clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];
-        modelStack.push_back(0);  // push mark indicating new DL
-        ++indexOfNextLitToPropagate;
-        ++decisionLevel; ++decisiones;
-        setLiteralToTrue(aux);    // now push decisionLit on top of the mark
-    }
+//     for (int i = 0; i < 2; ++i) {
+//        int aux = clausesNeg[i].size() > clausesPos[i].size() ? latencia[i] : -latencia[i];
+//        modelStack.push_back(0);  // push mark indicating new DL
+//        ++indexOfNextLitToPropagate;
+//        ++decisionLevel; ++decisiones;
+//        setLiteralToTrue(aux);    // now push decisionLit on top of the mark
+//    }
 
     // DPLL algorithm
     while (true) {
