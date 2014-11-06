@@ -1,6 +1,6 @@
-:-include(sud77).
-%:-dynamic(varNumber/3).
-symbolicOutput(1). % set to 1 to see symbolic output only; 0 otherwise.
+:-include(sud23).
+:-dynamic(varNumber/3).
+symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
 
 %writeClauses:- atleastOneColorPerNode, atmostOneColorPerNode, differentColors.
 
@@ -21,7 +21,10 @@ symbolicOutput(1). % set to 1 to see symbolic output only; 0 otherwise.
 % displaySol([Nv|S]):- num2var(Nv,x-I-J), write(I), write(': color '), write(J), nl, displaySol(S).
 
 
-writeClauses:- exactlyOneValuePerSquare, exactlyOneColPerValAndRow, exactlyOneRowPerValAndCol.
+writeClauses:- exactlyOneValuePerSquare, exactlyOneColPerValAndRow, exactlyOneRowPerValAndCol, exactlyOneValPerBlock, fill.
+
+fill:- filled(I,J,K), writeClause( [ x-I-J-K ] ), fail.
+fill.
 
 exactlyOne(Lits):- alo(Lits), amo(Lits).
 alo(Lits):- writeClause(Lits).
@@ -29,7 +32,7 @@ amo(Lits):-  append( _, [X|Lits1], Lits ),  append( _, [Y|_], Lits1 ), negate(X,
 amo(_).
 
 negate(\+X,X):-!.
-negate(X,\+X).
+negate(X,\+X). 
 
 
 exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
@@ -41,14 +44,18 @@ exactlyOneColPerValAndRow.
 exactlyOneRowPerValAndCol:- val(K), col(J), findall( x-I-J-K, row(I), Lits ), exactlyOne(Lits), fail.
 exactlyOneRowPerValAndCol.
 
-exactlyOneValPerBlock:- between(0,8,B), block(I,J,B), findall( x-I-J-K, val(K), Lits ), exactyOne(Lits), fail.
+exactlyOneValPerBlock:- bck(B), val(K), findall( x-I-J-K, block(I,J,B), Lits ), exactlyOne(Lits), fail.
 exactlyOneValPerBlock.
+
+
 
 square(I,J):- row(I), col(J).
 row(I):- between(1,9,I).
 col(J):- between(1,9,J).
 val(K):- between(1,9,K).
-block(I,J,B):- I is B // 3, J is B mod 3. 
+bck(B):- between(0,8,B).
+
+block(I,J,B):- between(1,3,I1), between(1,3,J1), I is (B // 3)*3+I1, J is (B mod 3)*3+J1. 
 
 
 sameRow(I,J1,I,J2):- square(I,J1), square(I,J2).
@@ -58,24 +65,27 @@ sameCol(I1,J,I2,J):- square(I1,J), square(I2,J).
 sameBlock(I1,J1,I2,J2) :-
     square(I1,J1),
     square(I2,J2),
-    I is (I1-1)/3,
-    I is (I2-1)/3,
-    J is (J1-1)/3,
-    J is (J2-1)/3.
+    I is (I1-1)//3,
+    I is (I2-1)//3,
+    J is (J1-1)//3,
+    J is (J2-1)//3.
 
 
 %displaySol([Nv|S]):- num2var(Nv,x-I-J-K),
 %                between(1,9,I),
 %                nl, between(1,9,J),
-%e                member(x-I-J-K,Ms), write(K), write(' '), fail.
-
-%displaySol(M):- symbolic(M,Ms),
-%                between(1,9,I),
-%                nl, between(1,9,J),
 %                member(x-I-J-K,Ms), write(K), write(' '), fail.
 
+displaySol(M):- nums2vars(M,Ms),
+                between(1,9,I),
+                nl, between(1,9,J),
+                member(x-I-J-K,Ms), write(K), write(' '), fail.
 
+nums2vars([], []).
+nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).
 
+%displaySol([]).
+%displaySol([Nv|S]):- num2var(Nv,x-I-J-N), write(I), write(' '), write(J), write(' = '), write(N), nl, displaySol(S).
 
 
 
