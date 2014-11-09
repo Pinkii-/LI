@@ -19,13 +19,13 @@ negate(X,\+X).
 exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
 exactlyOneValuePerSquare.
 
-exactlyOneColPerValAndRow:- row(I), val(K), findall( x-I-J-K, col(J), Lits ), exactlyOne(Lits), fail.
+exactlyOneColPerValAndRow:- row(I), val(K), findall( x-I-J-K, col(J), Lits ), amo(Lits), fail.
 exactlyOneColPerValAndRow.
 
-exactlyOneRowPerValAndCol:- val(K), col(J), findall( x-I-J-K, row(I), Lits ), exactlyOne(Lits), fail.
+exactlyOneRowPerValAndCol:- val(K), col(J), findall( x-I-J-K, row(I), Lits ),amo(Lits), fail.
 exactlyOneRowPerValAndCol.
 
-exactlyOneValPerBlock:- bck(B), val(K), findall( x-I-J-K, block(I,J,B), Lits ), exactlyOne(Lits), fail.
+exactlyOneValPerBlock:- bck(B), val(K), findall( x-I-J-K, block(I,J,B), Lits ), amo(Lits), fail.
 exactlyOneValPerBlock.
 
 square(I,J):- row(I), col(J).
