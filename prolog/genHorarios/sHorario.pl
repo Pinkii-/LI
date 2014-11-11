@@ -1,11 +1,6 @@
-:-include(sud23).
+:-include(entradaHoraris1).
 :-dynamic(varNumber/3).
-symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
-
-writeClauses:- exactlyOneValuePerSquare, exactlyOneColPerValAndRow, exactlyOneRowPerValAndCol, exactlyOneValPerBlock, fill.
-
-fill:- filled(I,J,K), writeClause( [ x-I-J-K ] ), fail.
-fill.
+symbolicOutput(1). % set to 1 to see symbolic output only; 0 otherwise.
 
 exactlyOne(Lits):- alo(Lits), amo(Lits).
 alo(Lits):- writeClause(Lits).
@@ -15,8 +10,58 @@ amo(_).
 negate(\+X,X):-!.
 negate(X,\+X). 
 
+% Por cada asignatura y dia , AMO hora. ----Maximo una hora al dia de un asignatura
+% Por cada asignatura , exactlyOne aula
+% Por cada asignatura , exactlyOne profesor
+% Por profesor y hora, AMO clase
+% Por aula y hora, AMO clase
+% Los cursos no pueden tener horas libres entre medio
+% Los cursos no pueden tener mas de 6 horas al dia
 
-exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
+% Una asignatura solo puede tener profesores que impartan esa asignatura
+% Una asignatura solo puede tener aulas donde se imparte esa asignatura
+% Un profesor no puede trabajar en una hora que tiene prohibida
+
+% ah = "asignatura a en hora h"
+% au = "asignatura a en aula u"
+% ad = "asignatura a en dia d"
+% ap = "asignatura a con profesor p"
+% ch = "curso c en hora h"
+
+% Sintaxi: assig(curs,assignatura,hores,llistaAules,llistaProfessors).
+
+numHores(60).
+numDies(5).
+
+asig(A):- numAssignatures(NA), between(1,NA,A).
+aula(AU):- numAules(NA),       between(1,NA,AU).
+prof(P):- numProfes(NP),       between(1,NP,P).
+curso(C):- numCursos(NC),      between(1,NC,C).
+hora(H):- numHores(NH),        between(1,NH,H).
+dia(D):- numDies(ND),          between(1,ND,D).
+
+writeClauses:-
+        %exactlyOneAulaPerAsigAndAulaPossible,
+        exactlyOneProfPerAsigAndProfPossible.
+        %asignacionHorasDias.
+
+exactlyOneAulaPerAsigAndAulaPossible:- asig(A), assig(_,A,_,U,_), findall( au-A-Ui,member(Ui,U), Lits), exactlyOne(Lits), fail.
+exactlyOneAulaPerAsigAndAulaPossible.
+
+exactlyOneProfPerAsigAndProfPossible:- asig(A), assig(_,A,_,_,P), findall( ap-A-Pi,member(Pi,P), Lits), exactlyOne(Lits), fail.
+exactlyOneProfPerAsigAndProfPossible.
+
+asignacionHorasDias:- asig(A), dia(D), asignarHoras(A,D), fail.
+asignacionHorasDias.
+
+asignarHoras(A,D):- findall( ah-A-H, trad(D,H), List ), append([\+ad-A-D],List,List1), writeClause(List1),
+                    member(L,List), writeClause( [\+L, ad-A-D] ), fail.
+
+trad(D,H):- D1 is (D-1)*12+1, D2 is D*12, between(D1, D2, H).
+
+
+
+/*exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
 exactlyOneValuePerSquare.
 
 exactlyOneColPerValAndRow:- row(I), val(K), findall( x-I-J-K, col(J), Lits ), amo(Lits), fail.
@@ -42,7 +87,7 @@ displaySol(M):- nums2vars(M,Ms),
                 member(x-I-J-K,Ms), write(K), write(' '), fail.
 
 nums2vars([], []).
-nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).
+nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).*/
 
 
 
