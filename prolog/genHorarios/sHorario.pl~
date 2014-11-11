@@ -1,6 +1,6 @@
 :-include(entradaHoraris1).
 :-dynamic(varNumber/3).
-symbolicOutput(1). % set to 1 to see symbolic output only; 0 otherwise.
+symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
 
 exactlyOne(Lits):- alo(Lits), amo(Lits).
 alo(Lits):- writeClause(Lits).
@@ -10,17 +10,18 @@ amo(_).
 negate(\+X,X):-!.
 negate(X,\+X). 
 
-% Por cada asignatura y dia , AMO hora. ----Maximo una hora al dia de un asignatura
-% Por cada asignatura , exactlyOne aula
-% Por cada asignatura , exactlyOne profesor
-% Por profesor y hora, AMO clase
-% Por aula y hora, AMO clase
-% Los cursos no pueden tener horas libres entre medio
+% DONE Por cada asignatura y dia , AMO hora. ----Maximo una hora al dia de un asignatura
+% DONE Por cada asignatura , exactlyOne aula
+% DONE Por cada asignatura , exactlyOne profesor
+% DONE Por profesor y hora, AMO clase
+% DONE Por aula y hora, AMO clase
+% DONE Los cursos no pueden tener horas libres entre medio
 % Los cursos no pueden tener mas de 6 horas al dia
+% DONE Los cursos no pueden tener horas solapadas
 
-% Una asignatura solo puede tener profesores que impartan esa asignatura
-% Una asignatura solo puede tener aulas donde se imparte esa asignatura
-% Un profesor no puede trabajar en una hora que tiene prohibida
+% DONE Una asignatura solo puede tener profesores que impartan esa asignatura
+% DONE Una asignatura solo puede tener aulas donde se imparte esa asignatura
+% DONE Un profesor no puede trabajar en una hora que tiene prohibida
 
 % ah = "asignatura a en hora h"
 % au = "asignatura a en aula u"
@@ -39,12 +40,22 @@ prof(P):- numProfes(NP),       between(1,NP,P).
 curso(C):- numCursos(NC),      between(1,NC,C).
 hora(H):- numHores(NH),        between(1,NH,H).
 dia(D):- numDies(ND),          between(1,ND,D).
+diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
 writeClauses:-
-%        exactlyOneAulaPerAsigAndAulaPossible, %Todas las sesiones de una misma asignatura deben impartirse en la misma aula
-%        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
-        horasProhibidasPorProf.%,
-%        asignacionHorasDias.
+        amoHoraPerAsigAndDia,
+        exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
+        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
+        horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
+        noCoincidenProf, % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
+        noCoincidenAulas, % No hay dos asignaturas en el mismo aula a la misma hora
+        noHorasLibres, % Un curso no tiene horas libres entre horas utilizadas en un dia
+        noHorasSolapadas, % Un curso no puede tener horas solapadas
+        asignarHorasDias,
+        asignarAsigCurso.
+
+amoHoraPerAsigAndDia:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits), amo(Lits), fail.
+amoHoraPerAsigAndDia.
 
 exactlyOneAulaPerAsigAndAulaPossible:- asig(A), assig(_,A,_,Us,_), findall( au-A-U,member(U,Us), Lits), exactlyOne(Lits), fail.
 exactlyOneAulaPerAsigAndAulaPossible.
@@ -52,19 +63,37 @@ exactlyOneAulaPerAsigAndAulaPossible.
 exactlyOneProfPerAsigAndProfPossible:- asig(A), assig(_,A,_,_,Ps), findall( ap-A-P,member(P,Ps), Lits), exactlyOne(Lits), fail.
 exactlyOneProfPerAsigAndProfPossible.
 
-horasProhibidasPorProf:- horesProhibides(P,Hs), assig(_,A,_,_,Ps), member(P,Ps), member(H,Hs), writeClause( [\+ap-A-P,\+ah-A-H] ), 
-                         fail.
+horasProhibidasPorProf:- horesProhibides(P,Hs), assig(_,A,_,_,Ps), member(P,Ps), member(H,Hs), 
+                         writeClause( [\+ap-A-P,\+ah-A-H] ), fail.
 horasProhibidasPorProf.
 
-asignacionHorasDias:- asig(A), dia(D), asignarHoras(A,D), fail.
-asignacionHorasDias.
+noCoincidenProf:- asig(A1), asig(A2), A1<A2, hora(H), prof(P), 
+                   assig(_,A1,_,Ps1,_), member(P,Ps1),
+                   assig(_,A2,_,Ps2,_), member(P,Ps2),  
+                   writeClause( [\+ah-A1-H, \+ah-A2-H, \+ap-A1-P, \+ap-A2-P] ), fail.
+noCoincidenProf.
 
-asignarHoras(A,D):- findall( ah-A-H, trad(D,H), List ), append([\+ad-A-D],List,List1), writeClause(List1),
+noCoincidenAulas:- asig(A1), asig(A2), A1<A2, hora(H), aula(U), 
+                   assig(_,A1,_,_,Us1), member(U,Us1),
+                   assig(_,A2,_,_,Us2), member(U,Us2),  
+                   writeClause( [\+ah-A1-H, \+ah-A2-H, \+au-A1-U, \+au-A2-U] ), fail.
+noCoincidenAulas.
+
+noHorasLibres:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H2 is H1+1, diaToH(D,H3), H3 > H2,
+                writeClause( [\+ch-C-H1, ch-C-H2, \+ch-C-H3] ), fail.
+noHorasLibres.
+
+noHorasSolapadas:- curso(C), findall( ch-C-H, hora(H), Lits), amo(Lits), fail.
+noHorasSolapadas.
+
+asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), List ), append([\+ad-A-D],List,List1), writeClause(List1),
                     member(L,List), writeClause( [\+L, ad-A-D] ), fail.
+asignarHorasDias.
 
-trad(D,H):- D1 is (D-1)*12+1, D2 is D*12, between(D1, D2, H).
+asignarAsigCurso:- hora(H), assig(C,A,_,_,_), writeClause( [\+ah-A-H, ch-C-H] ), writeClause( [ah-A-H, \+ch-C-H] ), fail.
+asignarAsigCurso.
 
-
+displaySol(_).
 
 /*exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
 exactlyOneValuePerSquare.
