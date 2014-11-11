@@ -1,4 +1,4 @@
-:-include(entradaHoraris1).
+:-include(entradaHoraris5).
 :-dynamic(varNumber/3).
 symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
 
@@ -43,7 +43,8 @@ dia(D):- numDies(ND),          between(1,ND,D).
 diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
 writeClauses:-
-        amoHoraPerAsigAndDia,
+        amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
+        %exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
         exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
         exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
         horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
@@ -57,6 +58,30 @@ writeClauses:-
 
 amoHoraPerAsigAndDia:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits), amo(Lits), fail.
 amoHoraPerAsigAndDia.
+
+/*exactlyOneKHoraPerAsig:- asig(A), assig(_,A,H,_,_), amKHoraPerAsig(A,H), alKHoraPerAsig(A,H), fail.
+exactlyOneKHoraPerAsig.
+
+amKHoraPerAsig(A,2):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3]), fail.
+amKHoraPerAsig(A,3):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4]), fail.
+amKHoraPerAsig(A,4):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5]), fail.
+amKHoraPerAsig(A,5):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, hora(H6), H5 < H6, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5,\+ah-A-H6]), fail.
+amKHoraPerAsig(A,_).
+
+alKHoraPerAsig(A,2):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, 
+                      writeClause([ah-A-H1,ah-A-H2,ah-A-H3]), fail.
+alKHoraPerAsig(A,3):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4]), fail.
+alKHoraPerAsig(A,4):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5]), fail.
+alKHoraPerAsig(A,5):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, hora(H6), H5 < H6, 
+                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5,\+ah-A-H6]), fail.
+alKHoraPerAsig(A,_)*/
+ 
 
 exactlyOneAulaPerAsigAndAulaPossible:- asig(A), assig(_,A,_,Us,_), findall( au-A-U,member(U,Us), Lits), exactlyOne(Lits), fail.
 exactlyOneAulaPerAsigAndAulaPossible.
@@ -91,7 +116,9 @@ asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), List ), append
                     member(L,List), writeClause( [\+L, ad-A-D] ), fail.
 asignarHorasDias.
 
-amo6HorasDia:-
+amo6HorasDia:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H1 < H2, diaToH(D,H3), H2 < H3, diaToH(D,H4), H3 < H4, 
+               diaToH(D,H5), H4 < H5, diaToH(D,H6), H5 < H6, diaToH(D,H7), H6 < H7,
+               writeClause( [ \+ch-C-H1,\+ch-C-H2,\+ch-C-H3,\+ch-C-H4,\+ch-C-H5,\+ch-C-H6,\+ch-C-H7 ] ), fail.
 amo6HorasDia.
 
 asignarAsigCurso:- hora(H), assig(C,A,_,_,_), writeClause( [\+ah-A-H, ch-C-H] ), writeClause( [ah-A-H, \+ch-C-H] ), fail.
