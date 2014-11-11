@@ -29,7 +29,6 @@ negate(X,\+X).
 % ap = "asignatura a con profesor p"
 % ch = "curso c en hora h"
 
-hora(H), assig(C,A,_,_,_), writeClause( [\+ah-A-H, ch-C-H] ), fail.
 % Sintaxi: assig(curs,assignatura,hores,llistaAules,llistaProfessors).
 
 numHores(60).
@@ -44,17 +43,17 @@ dia(D):- numDies(ND),          between(1,ND,D).
 diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
 writeClauses:- 
-        amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
-        exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
-        exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
-        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
-        horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
-        noCoincidenProf, % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
-        noCoincidenAulas, % No hay dos asignaturas en el mismo aula a la misma hora
-        noHorasLibres, % Un curso no tiene horas libres entre horas utilizadas en un dia
-        noHorasSolapadas, % Un curso no puede tener horas solapadas
-        amo6HorasDia, % Un curso como maximo puede tener 6 horas al dia
-        asignarHorasDias,
+%        amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
+%        exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
+%        exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
+%        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
+%        horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
+%        noCoincidenProf, % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
+%        noCoincidenAulas, % No hay dos asignaturas en el mismo aula a la misma hora
+%        noHorasLibres, % Un curso no tiene horas libres entre horas utilizadas en un dia
+%        noHorasSolapadas, % Un curso no puede tener horas solapadas
+%        amo6HorasDia, % Un curso como maximo puede tener 6 horas al dia
+%        asignarHorasDias,
         asignarAsigCurso
         .  
 
@@ -112,16 +111,17 @@ noHorasLibres.
 noHorasSolapadas:- curso(C), findall( ch-C-H, hora(H), Lits), amo(Lits), fail.
 noHorasSolapadas.
 
-asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits ), append([\+ad-A-D],Lits,Lits1), writeClause(Lits1),
-                    member(L,Lits), writeClause( [\+L, ad-A-D] ), fail.
-asignarHorasDias.
-
 amo6HorasDia:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H1 < H2, diaToH(D,H3), H2 < H3, diaToH(D,H4), H3 < H4, 
                diaToH(D,H5), H4 < H5, diaToH(D,H6), H5 < H6, diaToH(D,H7), H6 < H7,
                writeClause( [ \+ch-C-H1,\+ch-C-H2,\+ch-C-H3,\+ch-C-H4,\+ch-C-H5,\+ch-C-H6,\+ch-C-H7 ] ), fail.
 amo6HorasDia.
 
-asignarAsigCurso:- curso(C), hora(H), findall( ah-A-H, assig(C,A,_,_,_), Lits ), append([\+ch-C-H],Lits,Lits1), writeClause(Lits1),
+asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits ), append([\+ad-A-D],Lits,Lits1), writeClause(Lits1),
+                    member(L,Lits), writeClause( [\+L, ad-A-D] ), fail.
+asignarHorasDias.
+
+
+asignarAsigCurso:- hora(H), curso(C), findall( ah-A-H, assig(C,A,_,_,_), Lits ), append([\+ch-C-H],Lits,Lits1), writeClause(Lits1),
                     member(L,Lits), writeClause( [\+L, ch-C-H] ), fail. 
 asignarAsigCurso.
 
