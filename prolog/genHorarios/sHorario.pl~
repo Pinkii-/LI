@@ -52,8 +52,8 @@ exactlyOneAulaPerAsigAndAulaPossible.
 exactlyOneProfPerAsigAndProfPossible:- asig(A), assig(_,A,_,_,Ps), findall( ap-A-P,member(P,Ps), Lits), exactlyOne(Lits), fail.
 exactlyOneProfPerAsigAndProfPossible.
 
-horasProhibidasPorProf:- horesProhibides(P,Hs), assig(_,A,_,_,Ps), member(P,Ps), member(H,Hs), 
-                         writeClause( [\+ap-A-P,\+ah-A-H] ), fail.
+horasProhibidasPorProf:- horesProhibides(P,Hs), assig(_,A,_,_,Ps), member(P,Ps), member(H,Hs), writeClause( [\+ap-A-P,\+ah-A-H] ), 
+                         fail.
 horasProhibidasPorProf.
 
 asignacionHorasDias:- asig(A), dia(D), asignarHoras(A,D), fail.
