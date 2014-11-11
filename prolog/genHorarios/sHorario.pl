@@ -1,4 +1,4 @@
-:-include(entradaHoraris5).
+:-include(entradaHoraris2).
 :-dynamic(varNumber/3).
 symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
 
@@ -8,7 +8,7 @@ amo(Lits):-  append( _, [X|Lits1], Lits ),  append( _, [Y|_], Lits1 ), negate(X,
 amo(_).
 
 negate(\+X,X):-!.
-negate(X,\+X). 
+negate(X,\+X).
 
 % DONE Por cada asignatura y dia , AMO hora. ----Maximo una hora al dia de un asignatura
 % DONE Por cada asignatura , exactlyOne aula
@@ -42,9 +42,9 @@ hora(H):- numHores(NH),        between(1,NH,H).
 dia(D):- numDies(ND),          between(1,ND,D).
 diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
-writeClauses:-
+writeClauses:- 
         amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
-        %exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
+        exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
         exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
         exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
         horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
@@ -54,33 +54,33 @@ writeClauses:-
         noHorasSolapadas, % Un curso no puede tener horas solapadas
         amo6HorasDia, % Un curso como maximo puede tener 6 horas al dia
         asignarHorasDias,
-        asignarAsigCurso.
-
+        asignarAsigCurso
+        .  
+  
+ 
 amoHoraPerAsigAndDia:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits), amo(Lits), fail.
-amoHoraPerAsigAndDia.
+amoHoraPerAsigAndDia. 
 
-/*exactlyOneKHoraPerAsig:- asig(A), assig(_,A,H,_,_), amKHoraPerAsig(A,H), alKHoraPerAsig(A,H), fail.
-exactlyOneKHoraPerAsig.
+exactlyKHoraPerAsig:- asig(A), assig(_,A,H,_,_), amKHoraPerAsig(A,H), alKHoraPerAsig(A,H), fail. 
+exactlyKHoraPerAsig. 
 
-amKHoraPerAsig(A,2):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3]), fail.
-amKHoraPerAsig(A,3):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4]), fail.
-amKHoraPerAsig(A,4):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5]), fail.
-amKHoraPerAsig(A,5):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, hora(H6), H5 < H6, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5,\+ah-A-H6]), fail.
-amKHoraPerAsig(A,_).
+amKHoraPerAsig(A,1):- findall(ad-A-D, dia(D), Lits), amo(Lits), fail.
+amKHoraPerAsig(A,2):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, 
+                      writeClause([\+ad-A-D1,\+ad-A-D2,\+ad-A-D3]), fail.
+amKHoraPerAsig(A,3):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, dia(D4), D3 < D4, 
+                      writeClause([\+ad-A-D1,\+ad-A-D2,\+ad-A-D3,\+ad-A-D4]), fail.
+amKHoraPerAsig(A,4):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, dia(D4), D3 < D4, dia(D5), D4 < D5, 
+                      writeClause([\+ad-A-D1,\+ad-A-D2,\+ad-A-D3,\+ad-A-D4,\+ad-A-D5]), fail.
+amKHoraPerAsig(_,_).
 
-alKHoraPerAsig(A,2):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, 
-                      writeClause([ah-A-H1,ah-A-H2,ah-A-H3]), fail.
-alKHoraPerAsig(A,3):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4]), fail.
-alKHoraPerAsig(A,4):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5]), fail.
-alKHoraPerAsig(A,5):- hora(H1), hora(H2), H1 < H2, hora(H3), H2 < H3, hora(H4), H3 < H4, hora(H5), H4 < H5, hora(H6), H5 < H6, 
-                      writeClause([\+ah-A-H1,\+ah-A-H2,\+ah-A-H3,\+ah-A-H4,\+ah-A-H5,\+ah-A-H6]), fail.
-alKHoraPerAsig(A,_)*/
+alKHoraPerAsig(A,1):- findall(ad-A-D, dia(D), Lits), alo(Lits), fail. 
+alKHoraPerAsig(A,2):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, dia(D4), D3 < D4, 
+                      writeClause([ad-A-D1,ad-A-D2,ad-A-D3,ad-A-D4]), fail.
+alKHoraPerAsig(A,3):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, 
+                      writeClause([ad-A-D1,ad-A-D2,ad-A-D3]), fail.
+alKHoraPerAsig(A,4):- dia(D1), dia(D2), D1 < D2, writeClause([ad-A-D1,ad-A-D2]), fail.
+alKHoraPerAsig(A,5):- dia(D1), writeClause([ad-A-D1]), fail.
+alKHoraPerAsig(_,_).
  
 
 exactlyOneAulaPerAsigAndAulaPossible:- asig(A), assig(_,A,_,Us,_), findall( au-A-U,member(U,Us), Lits), exactlyOne(Lits), fail.
@@ -112,8 +112,8 @@ noHorasLibres.
 noHorasSolapadas:- curso(C), findall( ch-C-H, hora(H), Lits), amo(Lits), fail.
 noHorasSolapadas.
 
-asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), List ), append([\+ad-A-D],List,List1), writeClause(List1),
-                    member(L,List), writeClause( [\+L, ad-A-D] ), fail.
+asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits ), append([\+ad-A-D],Lits,Lits1), writeClause(Lits1),
+                    member(L,Lits), writeClause( [\+L, ad-A-D] ), fail.
 asignarHorasDias.
 
 amo6HorasDia:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H1 < H2, diaToH(D,H3), H2 < H3, diaToH(D,H4), H3 < H4, 
@@ -124,7 +124,24 @@ amo6HorasDia.
 asignarAsigCurso:- hora(H), assig(C,A,_,_,_), writeClause( [\+ah-A-H, ch-C-H] ), writeClause( [ah-A-H, \+ch-C-H] ), fail.
 asignarAsigCurso.
 
-displaySol(_).
+displaySol(M):- unix('clear'), nums2vars(M,Ms), 
+    curso(C), nl, write('Curs -> '), write(C), write(' ======================================='),
+    assig(C,A,_,_,_), nl, write('Assig '), write(A), 
+    member(ap-A-P, Ms), write(' professor '), write(P), 
+    member(au-A-U, Ms), write(', aula '), write(U), write(': '),
+    member(ad-A-D, Ms), nl, write('  dia '), write(D), 
+    member(ah-A-H, Ms), diaToH(D, H), write(' hora - '), write(H), fail.
+displaySol(_):- nl. 
+
+% ah = "asignatura a en hora h"
+% au = "asignatura a en aula u"
+% ad = "asignatura a en dia d"
+% ap = "asignatura a con profesor p"
+% ch = "curso c en hora h"
+
+nums2vars([], []).
+nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).
+
 
 /*exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
 exactlyOneValuePerSquare.
@@ -151,8 +168,7 @@ displaySol(M):- nums2vars(M,Ms),
                 nl, between(1,9,J),
                 member(x-I-J-K,Ms), write(K), write(' '), fail.
 
-nums2vars([], []).
-nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).*/
+*/
 
 
 
