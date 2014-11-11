@@ -1,4 +1,4 @@
-:-include(entradaHoraris2).
+:-include(entradaHoraris1).
 :-dynamic(varNumber/3).
 symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
 
@@ -56,8 +56,7 @@ writeClauses:-
         asignarHorasDias,
         asignarAsigCurso
         .  
-  
- 
+
 amoHoraPerAsigAndDia:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits), amo(Lits), fail.
 amoHoraPerAsigAndDia. 
 
@@ -121,7 +120,8 @@ amo6HorasDia:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H1 < H2, diaToH(D,H
                writeClause( [ \+ch-C-H1,\+ch-C-H2,\+ch-C-H3,\+ch-C-H4,\+ch-C-H5,\+ch-C-H6,\+ch-C-H7 ] ), fail.
 amo6HorasDia.
 
-asignarAsigCurso:- hora(H), assig(C,A,_,_,_), writeClause( [\+ah-A-H, ch-C-H] ), writeClause( [ah-A-H, \+ch-C-H] ), fail.
+asignarAsigCurso:- curso(C), hora(H), findall( ah-A-H, assig(C,A,_,_,_), Lits ), append([\+ch-C-H],Lits,Lits1), writeClause(Lits1),
+                    member(L,Lits), writeClause( [\+L, ch-C-H] ), fail. 
 asignarAsigCurso.
 
 displaySol(M):- unix('clear'), nums2vars(M,Ms), 

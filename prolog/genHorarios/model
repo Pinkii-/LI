@@ -5,53 +5,53 @@ c
 c using 2 as default phase
 c
 c parsing infile.cnf
-c parsed header 'p cnf 1883 73586'
-c initialized 1883 variables
-c found 73586 non trivial clauses
+c parsed header 'p cnf 1878 73532'
+c initialized 1878 variables
+c found 73532 non trivial clauses
 c
 c random number generator seed 0
 c 
 c  seconds     variables   original    learned     learning        MB
 c         level        used      conflicts    limit      agility
 c 
-c s   0.1   0.0  1384  80.8 26366     0  2184     0   0.0   0.0   1.9 
+c s   0.1   0.0  1810  81.0 52285     0  5809     0   0.0   0.0   3.0 
 c 
-c initial reduction limit 25206 clauses
+c initial reduction limit 26142 clauses
 c 
-c 0   0.1   9.0   982  85.5 26366    85  2259 25206   2.2   5.1   1.9 
+c 0   0.1  34.2  1453  84.2 52285    55  5853 26142   0.5   1.3   3.0 
 c 
 c  seconds     variables   original    learned     learning        MB
 c         level        used      conflicts    limit      agility
 c 
 s UNSATISFIABLE
 c
-c 4 iterations
+c 1 iterations
 c 0 restarts (0 skipped)
-c 85 conflicts (70 uips = 82.4%)
+c 55 conflicts (50 uips = 90.9%)
 c 0 adc conflicts
 c 0 dereferenced literals
-c 261 decisions (0 random = 0.00%, 0 assumptions)
-c 23 static phase decisions (1.2% of all variables)
-c 901 fixed variables
-c 11833 learned literals
-c 6.8% deleted literals
-c 10171 antecedents (119.7 antecedents per clause)
-c 19028 propagations (72.9 propagations per decision)
-c 67172 visits (3.5 per propagation)
-c 42531 binary clauses visited (63.3% 2.2 per propagation)
-c 7662 ternary clauses visited (11.4% 0.4 per propagation)
-c 16979 large clauses visited (25.3% 0.9 per propagation)
-c 39855 other true (59.3% of visited clauses)
-c 24649 other true in binary clauses (61.8%), 6548 upper (26.6%)
-c 15206 other true in large clauses (38.2%), 4856 upper (31.9%)
-c 42050 ternary and large traversals (0.6 per visit)
-c 33053 large traversals (1.9 per large visit)
-c 19028 assignments
-c 85.5% variables used
+c 340 decisions (0 random = 0.00%, 0 assumptions)
+c 47 static phase decisions (2.5% of all variables)
+c 425 fixed variables
+c 19015 learned literals
+c 3.8% deleted literals
+c 14551 antecedents (264.6 antecedents per clause)
+c 15011 propagations (44.1 propagations per decision)
+c 41092 visits (2.7 per propagation)
+c 18933 binary clauses visited (46.1% 1.3 per propagation)
+c 11046 ternary clauses visited (26.9% 0.7 per propagation)
+c 11113 large clauses visited (27.0% 0.7 per propagation)
+c 21650 other true (52.7% of visited clauses)
+c 4600 other true in binary clauses (21.2%), 3024 upper (65.7%)
+c 17050 other true in large clauses (78.8%), 2818 upper (16.5%)
+c 33115 ternary and large traversals (0.8 per visit)
+c 21629 large traversals (1.9 per large visit)
+c 15012 assignments
+c 84.2% variables used
 c 0.1 seconds in library
-c 0.3 megaprops/second
-c 1.0 million visits per second
+c 0.2 megaprops/second
+c 0.6 million visits per second
 c recycled 0.0 MB in 0 reductions
-c recycled 1.1 MB in 1 simplifications
-c 2.9 MB maximally allocated
+c recycled 0.0 MB in 1 simplifications
+c 3.0 MB maximally allocated
 c 0.1 seconds total run time
