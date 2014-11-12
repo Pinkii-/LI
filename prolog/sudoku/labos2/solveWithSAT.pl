@@ -41,6 +41,7 @@ displaySol(M):- unix('clear'),
                 between(1,9,I),
                 nl, between(1,9,J),
                 member(x-I-J-K,Ms), write(K), write(' '), fail.
+displaySol(_).
 
 nums2vars([], []).
 nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).

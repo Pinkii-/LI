@@ -42,20 +42,20 @@ hora(H):- numHores(NH),        between(1,NH,H).
 dia(D):- numDies(ND),          between(1,ND,D).
 diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
-writeClauses:- 
-%        amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
-%        exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
-%        exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
-%        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
-%        horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
-%        noCoincidenProf, % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
-%        noCoincidenAulas, % No hay dos asignaturas en el mismo aula a la misma hora
-%        noHorasLibres, % Un curso no tiene horas libres entre horas utilizadas en un dia
-%        noHorasSolapadas, % Un curso no puede tener horas solapadas
-%        amo6HorasDia, % Un curso como maximo puede tener 6 horas al dia
-%        asignarHorasDias,
+writeClauses:-
+        amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
+        exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
+        exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
+        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
+        horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
+        noCoincidenProf, % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
+        noCoincidenAulas, % No hay dos asignaturas en el mismo aula a la misma hora
+        noHorasLibres, % Un curso no tiene horas libres entre horas utilizadas en un dia
+        noHorasSolapadas, % Un curso no puede tener horas solapadas
+        amo6HorasDia, % Un curso como maximo puede tener 6 horas al dia
+        asignarHorasDias,
         asignarAsigCurso
-        .  
+        . 
 
 amoHoraPerAsigAndDia:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits), amo(Lits), fail.
 amoHoraPerAsigAndDia. 
@@ -78,7 +78,7 @@ alKHoraPerAsig(A,2):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, dia(D4), D3 <
 alKHoraPerAsig(A,3):- dia(D1), dia(D2), D1 < D2, dia(D3), D2 < D3, 
                       writeClause([ad-A-D1,ad-A-D2,ad-A-D3]), fail.
 alKHoraPerAsig(A,4):- dia(D1), dia(D2), D1 < D2, writeClause([ad-A-D1,ad-A-D2]), fail.
-alKHoraPerAsig(A,5):- dia(D1), writeClause([ad-A-D1]), fail.
+alKHoraPerAsig(A,5):- dia(D), writeClause([ad-A-D]), fail.
 alKHoraPerAsig(_,_).
  
 
@@ -108,21 +108,23 @@ noHorasLibres:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H2 is H1+1, diaToH
                 writeClause( [\+ch-C-H1, ch-C-H2, \+ch-C-H3] ), fail.
 noHorasLibres.
 
-noHorasSolapadas:- curso(C), findall( ch-C-H, hora(H), Lits), amo(Lits), fail.
+noHorasSolapadas:- curso(C), hora(H), assig(C,A1,_,_,_), assig(C,A2,_,_,_), A1 < A2, 
+                   writeClause( [ \+ah-A1-H, \+ah-A2-H] ), fail.
 noHorasSolapadas.
 
-amo6HorasDia:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H1 < H2, diaToH(D,H3), H2 < H3, diaToH(D,H4), H3 < H4, 
-               diaToH(D,H5), H4 < H5, diaToH(D,H6), H5 < H6, diaToH(D,H7), H6 < H7,
-               writeClause( [ \+ch-C-H1,\+ch-C-H2,\+ch-C-H3,\+ch-C-H4,\+ch-C-H5,\+ch-C-H6,\+ch-C-H7 ] ), fail.
+amo6HorasDia:- curso(C), dia(D), assig(C,A1,_,_,_), assig(C,A2,_,_,_), A1 < A2, 
+               assig(C,A3,_,_,_), A2 < A3, assig(C,A4,_,_,_), A3 < A4, assig(C,A5,_,_,_),
+               A4 < A5, assig(C,A6,_,_,_), A5 < A6, assig(C,A7,_,_,_), A6 < A7,
+      writeClause([\+ad-A1-D, \+ad-A2-D, \+ad-A3-D, \+ad-A4-D, \+ad-A5-D, \+ad-A6-D, \+ad-A7-D ]), fail.
 amo6HorasDia.
 
 asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits ), append([\+ad-A-D],Lits,Lits1), writeClause(Lits1),
-                    member(L,Lits), writeClause( [\+L, ad-A-D] ), fail.
+                   member(L,Lits), writeClause( [\+L, ad-A-D] ), fail.
 asignarHorasDias.
 
 
 asignarAsigCurso:- hora(H), curso(C), findall( ah-A-H, assig(C,A,_,_,_), Lits ), append([\+ch-C-H],Lits,Lits1), writeClause(Lits1),
-                    member(L,Lits), writeClause( [\+L, ch-C-H] ), fail. 
+                   member(L,Lits), writeClause( [\+L, ch-C-H] ), fail. 
 asignarAsigCurso.
 
 displaySol(M):- unix('clear'), nums2vars(M,Ms), 
@@ -131,7 +133,7 @@ displaySol(M):- unix('clear'), nums2vars(M,Ms),
     member(ap-A-P, Ms), write(' professor '), write(P), 
     member(au-A-U, Ms), write(', aula '), write(U), write(': '),
     member(ad-A-D, Ms), nl, write('  dia '), write(D), 
-    member(ah-A-H, Ms), diaToH(D, H), write(' hora - '), write(H), fail.
+    member(ah-A-H, Ms), diaToH(D, H), write(' hora - '), write(H), fail. 
 displaySol(_):- nl. 
 
 % ah = "asignatura a en hora h"
@@ -143,33 +145,7 @@ displaySol(_):- nl.
 nums2vars([], []).
 nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).
 
-
-/*exactlyOneValuePerSquare:-  row(I), col(J), findall( x-I-J-K, val(K), Lits ), exactlyOne(Lits), fail.
-exactlyOneValuePerSquare.
-
-exactlyOneColPerValAndRow:- row(I), val(K), findall( x-I-J-K, col(J), Lits ), amo(Lits), fail.
-exactlyOneColPerValAndRow.
-
-exactlyOneRowPerValAndCol:- val(K), col(J), findall( x-I-J-K, row(I), Lits ),amo(Lits), fail.
-exactlyOneRowPerValAndCol.
-
-exactlyOneValPerBlock:- bck(B), val(K), findall( x-I-J-K, block(I,J,B), Lits ), amo(Lits), fail.
-exactlyOneValPerBlock.
-
-square(I,J):- row(I), col(J).
-row(I):- between(1,9,I).
-col(J):- between(1,9,J).
-val(K):- between(1,9,K).
-bck(B):- between(0,8,B).
-
-block(I,J,B):- between(1,3,I1), between(1,3,J1), I is (B // 3)*3+I1, J is (B mod 3)*3+J1. 
-
-displaySol(M):- nums2vars(M,Ms),
-                between(1,9,I),
-                nl, between(1,9,J),
-                member(x-I-J-K,Ms), write(K), write(' '), fail.
-
-*/
+  
 
 
 

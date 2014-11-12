@@ -1,7 +1,9 @@
 file = sHorario
 
+all: clean $(file)
+
 $(file): $(file).pl
 	swipl -O -g main --stand_alone=true -o $(file) -c $(file).pl
-	./$(file)
+
 clean:
-	rm *~ sHorario clauses
+	rm sHorario *~ clauses infile.cnf model header
