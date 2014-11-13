@@ -128,12 +128,11 @@ asignarAsigCurso:- hora(H), curso(C), findall( ah-A-H, assig(C,A,_,_,_), Lits ),
 asignarAsigCurso.
 
 displaySol(M):- unix('clear'), nums2vars(M,Ms), 
-    curso(C), nl, write('Curs -> '), write(C), write(' ======================================='),
+    curso(C), nl, write('          Curs '), write(C),
     assig(C,A,_,_,_), nl, write('Assig '), write(A), 
     member(ap-A-P, Ms), write(' professor '), write(P), 
     member(au-A-U, Ms), write(', aula '), write(U), write(': '),
-    member(ad-A-D, Ms), nl, write('  dia '), write(D), 
-    member(ah-A-H, Ms), diaToH(D, H), write(' hora - '), write(H), fail. 
+    write(' hora - '), member(ad-A-D, Ms), member(ah-A-H, Ms), diaToH(D, H), write(H), write(' '), fail. 
 displaySol(_):- nl. 
 
 % ah = "asignatura a en hora h"
