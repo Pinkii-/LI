@@ -1,6 +1,6 @@
 file = sHorario
 
-all: clean $(file)
+all: $(file)
 
 $(file): $(file).pl
 	swipl -O -g main --stand_alone=true -o $(file) -c $(file).pl
