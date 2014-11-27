@@ -16,7 +16,7 @@ negate(X,\+X).
 % DONE Por profesor y hora, AMO clase
 % DONE Por aula y hora, AMO clase
 % DONE Los cursos no pueden tener horas libres entre medio
-% Los cursos no pueden tener mas de 6 horas al dia
+% DONE Los cursos no pueden tener mas de 6 horas al dia
 % DONE Los cursos no pueden tener horas solapadas
 
 % DONE Una asignatura solo puede tener profesores que impartan esa asignatura
@@ -43,16 +43,16 @@ dia(D):- numDies(ND),          between(1,ND,D).
 diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
 writeClauses:-
-        amoHoraPerAsigAndDia, % Como maximo una hora al dia por asignatura
-        exactlyKHoraPerAsig, % Exactamente k horas a la semana por cada asignatura
-        exactlyOneAulaPerAsigAndAulaPossible, % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
-        exactlyOneProfPerAsigAndProfPossible, % y por el mismo profesor
-        horasProhibidasPorProf, % Un profesor no da clase en una hora prohibida
-        noCoincidenProf, % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
-        noCoincidenAulas, % No hay dos asignaturas en el mismo aula a la misma hora
-        noHorasLibres, % Un curso no tiene horas libres entre horas utilizadas en un dia
-        noHorasSolapadas, % Un curso no puede tener horas solapadas
-        amo6HorasDia, % Un curso como maximo puede tener 6 horas al dia
+        amoHoraPerAsigAndDia,                   % Como maximo una hora al dia por asignatura
+        exactlyKHoraPerAsig,                    % Exactamente k horas a la semana por cada asignatura
+        exactlyOneAulaPerAsigAndAulaPossible,   % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
+        exactlyOneProfPerAsigAndProfPossible,   % y por el mismo profesor
+        horasProhibidasPorProf,                 % Un profesor no da clase en una hora prohibida
+        noCoincidenProf,                        % No hay dos asignaturas a la misma hora que sean impartidas por el mismo profesor
+        noCoincidenAulas,                       % No hay dos asignaturas en el mismo aula a la misma hora
+        noHorasLibres,                          % Un curso no tiene horas libres entre horas utilizadas en un dia
+        noHorasSolapadas,                       % Un curso no puede tener horas solapadas
+        amo6HorasDia,                           % Un curso como maximo puede tener 6 horas al dia
         asignarHorasDias,
         asignarAsigCurso
         . 
