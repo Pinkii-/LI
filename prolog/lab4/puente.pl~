@@ -10,8 +10,7 @@ solucionOptima:-
     nat(N),
     camino([0,0,0,0,0,0],[1,1,1,1,1,S],[[0,0,0,0,0,0]],C),
     S == N,
-    write(C), 
-    nl,
+    write(C), ln,
     fail.
 
 % [P1,P2,P5,P8,L,S]

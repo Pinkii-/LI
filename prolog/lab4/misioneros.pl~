@@ -6,14 +6,14 @@ camino( EstadoActual, EstadoFinal, CaminoHastaAhora, CaminoTotal ):-
     unPaso( EstadoActual, EstSiguiente ), \+member(EstSiguiente, CaminoHastaAhora),
     camino( EstSiguiente, EstadoFinal, [EstSiguiente|CaminoHastaAhora], CaminoTotal ).
 
-/*
+
 solucionOptima:-
     nat(N),
     camino([3,3,0,0,0],[0,0,3,3,_],[[3,3,0,0,0]],C),
     length(C,N),
     write(C).
 
-
+/*
 unPaso([3,1,0,2,0],[1,1,2,2,1]). %Misioneros -> 
 unPaso([3,2,0,1,0],[2,2,1,1,1]).
 unPaso([2,2,1,1,0],[0,2,3,1,1]).
