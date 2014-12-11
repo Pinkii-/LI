@@ -34,6 +34,7 @@ unPaso([0,P2,P5,0,0,S],[1,P2,P5,1,1,S1]):- S1 is S+8.
 unPaso([P1,0,P5,0,0,S],[P1,1,P5,1,1,S1]):- S1 is S+8.
 unPaso([P1,P2,0,0,0,S],[P1,P2,1,1,1,S1]):- S1 is S+8.
 
+%unPaso([P|Lp],0,S], 
 
 
 
