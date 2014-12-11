@@ -60,7 +60,7 @@ suma_demas(L):- pert_con_resto(X,L,Demas), suma(Demas,X),!.
 
 %-------Ej 9 -------------------------------------------------------------------
 
-suma_ants(L)
+suma_ants(L):- suma(L1,R)
 
 
 
