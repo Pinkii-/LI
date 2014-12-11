@@ -44,7 +44,7 @@ diaToH(D,H):- between(1, 12, Aux), H is (D-1)*12 + Aux.
 
 writeClauses:-
         amoHoraPerAsigAndDia,                   % Como maximo una hora al dia por asignatura
-        exactlyKHoraPerAsig,                    % Exactamente k horas a la semana por cada asignatura
+        exactlyKHoraPerAsig,                    % Exactamente k dias a la semana por cada asignatura
         exactlyOneAulaPerAsigAndAulaPossible,   % Todas las sesiones de una misma asignatura deben impartirse en la misma aula
         exactlyOneProfPerAsigAndProfPossible,   % y por el mismo profesor
         horasProhibidasPorProf,                 % Un profesor no da clase en una hora prohibida
@@ -121,12 +121,12 @@ amo6HorasDia:- curso(C), dia(D), diaToH(D,H1), diaToH(D,H2), H2 is H1 + 6,
                 writeClause( [\+ch-C-H1,\+ch-C-H2]),fail.
 amo6HorasDia.
 
-asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits ), append([\+ad-A-D],Lits,Lits1), writeClause(Lits1),
+asignarHorasDias:- asig(A), dia(D), findall( ah-A-H, diaToH(D,H), Lits ), writeClause([\+ad-A-D|Lits]),
                    member(L,Lits), writeClause( [\+L, ad-A-D] ), fail.
 asignarHorasDias.
 
 
-asignarAsigCurso:- hora(H), curso(C), findall( ah-A-H, assig(C,A,_,_,_), Lits ), append([\+ch-C-H],Lits,Lits1), writeClause(Lits1),
+asignarAsigCurso:- hora(H), curso(C), findall( ah-A-H, assig(C,A,_,_,_), Lits ), writeClause([\+ch-C-H|Lits]),
                    member(L,Lits), writeClause( [\+L, ch-C-H] ), fail. 
 asignarAsigCurso.
 

@@ -84,9 +84,6 @@ insercion(X,[Y|L],[Y|L1]):-  insercion(X,L,L1).
 
 %-------Ej 13 ------------------------------------------------------------------
 
-% El peor caso sería en el cual la lista esta ordenada de forma inversa.
-% El numero de permutaciones posible sería: N sobre 2 (creo que es así)
-
 
 
 
