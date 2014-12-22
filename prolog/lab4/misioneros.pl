@@ -39,7 +39,7 @@ maximoEstosMisioneros(M):- numberM(M).
 maximoEstosCanibales(B):- barco(B), numberC(C), B =< C,!.
 maximoEstosCanibales(C):- numberM(C).
 
-safe(0,_).
+safe(0,_):-!.
 safe(M,_):- numberM(M),!.
 safe(M,C):- M >= C, numberM(Mt), numberC(Ct), Mt-M >= Ct-C.
 
