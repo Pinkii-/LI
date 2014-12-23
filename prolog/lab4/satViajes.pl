@@ -1,6 +1,6 @@
 :-include(viaje).
 :-dynamic(varNumber/3).
-symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
+symbolicOutput(1). % set to 1 to see symbolic output only; 0 otherwise.
 
 exactlyOne(Lits):- alo(Lits), amo(Lits).
 alo(Lits):- writeClause(Lits).
@@ -12,8 +12,8 @@ negate(X,\+X).
 
 writeClauses:- aloCityPerInterest.
 
-aloCityPerInterest:- interesos(Ints), member(Int, Ints), findall(c-C, atractius(C,A), member(Int,A), Lits), alo(Lits).
-              
+aloCityPerInterest:- interessos(Ints), member(Int, Ints), findall(c-C, (atractius(C,A), member(Int,A))  , Lits), alo(Lits).
+aloCityPerInterest.              
 
 
 
