@@ -30,5 +30,26 @@ solucion(N,[Int|Ints],[C|S]):- N>0, atractius(C,A), member(Int,A), removeAll(A,I
                              N1 is N-1, solucion(N1,Ints1,S).
 
 removeAll([],L,L).
-removeAll([X|L1],L2,[X|Resto]):- \+member(X,L2),! ,removeAll(L1,L2,Resto).
-removeAll([X|L1],L2,Resto):- pert_con_resto(X,L2,L3), removeAll(L1,L3,Resto).
+removeAll([X|L1],L2,Resto):- member(X,L2), !, pert_con_resto(X,L2,L3), removeAll(L1,L3,Resto).
+removeAll([_|L1],L2,Resto):- removeAll(L1,L2,Resto).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
