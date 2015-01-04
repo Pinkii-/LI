@@ -1,8 +1,9 @@
-ciutats([paris,bangkok,montevideo,windhoek,male,delhi,reunion,lima,banff]).
+ciutats([paris,bangkok,montevideo,windhoek,male,delhi,reunion,lima,banff,test]).
 
 interessos([paisatges,cultura,etnies,gastronomia,esport,relax]).
 
 atractius( paris,     [cultura,gastronomia]      ).
+atractius( test,      [paisatges,cultura,etnies,gastronomia,esport,relax]).
 atractius( bangkok,   [paisatges,relax,esport]   ).
 atractius( montevideo,[gastronomia,relax]        ).
 atractius( windhoek,  [etnies,paisatges]         ).
