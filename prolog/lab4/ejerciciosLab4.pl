@@ -134,5 +134,31 @@ esPalindrom([X|L]):- concat(L2,[X],L), esPalindrom(L2).
 
 %-------Ej 19 ------------------------------------------------------------------
 
+money:- permutation([S,E,N,D,M,O,R,Y,_,_],[0,1,2,3,4,5,6,7,8,9]),
+        suma([D,N,E,S],[E,R,O,M],[Y,E,N,O],0,M),
+        write('  '), write([S,E,N,D]), nl,
+        write('  '), write([M,O,R,E]), nl,
+                   write([M,O,N,E,Y]).
+        
+suma([],[],[],M,M).
+suma([X|L1],[Y|L2],[Z|L3], Carry, M):-
+        Z is (X+Y+Carry) mod 10,
+        Carry2 is (X+Y+Carry) // 10,
+        suma(L1,L2,L3,Carry2,M).
 
+%-------Ej 20 ------------------------------------------------------------------
 
+simplifica(1*F,G):-!, simplifica(F,G).
+simplifica(F*1,G):-!, simplifica(F,G).
+simplifica(F-F,0):-!.
+simplifica(F/F,1):- F \= 0, !.
+simplifica(F+F,2*F2):-!, simplifica(F,F2).
+simplifica(F*F,F2^2):-!, simplifica(F,F2).
+simplifica(C*F+F,(C2+1)*F2):-!, simplifica(C,C2), simplifica(F,F2).
+simplifica(C*F+D*F,(C2+D2)*F2):-!, simplifica(C,C2), simplifica(D,D2), simplifica(F,F2).
+simplifica(F^0,1):- F \= 0,!.
+simplifica(F^E,FE):-!, simplifica(F,F2), simplifica(E,E2), FE is F2**E2.
+simplifica(0^C,0):- C \= 0,!.
+simplifica(A,A).
+
+%super broken :(
