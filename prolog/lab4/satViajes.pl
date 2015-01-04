@@ -2,15 +2,27 @@
 :-dynamic(varNumber/3).
 symbolicOutput(0). % set to 1 to see symbolic output only; 0 otherwise.
 
+
 exactlyOne(Lits):- alo(Lits), amo(Lits).
 alo(Lits):- writeClause(Lits).
 amo(Lits):-  append( _, [X|Lits1], Lits ),  append( _, [Y|_], Lits1 ), negate(X,NX), negate(Y,NY), writeClause( [ NX, NY ] ), fail.
 amo(_).
 
+amo(K, Lits):- lits(K,Lits,S), negateAll(S, Ss), amo(Ss), fail.
+amo(_,_).
+
+lits(0,[],[]).
+lits(N,[X|L],[X|S]):- N1 is N-1, lits(N1,L,S).
+lits(N,[_|L],S):- lits(N,L,S).
+
+negateAll([],[]).
+negateAll([X|L],[Y,L1]):- negate(X,Y), negateAll(L,L1).
+
 negate(\+X,X):-!.
 negate(X,\+X).
 
-writeClauses:- aloCityPerInterest.
+writeClauses:- maxCiudades(N), ciutats(C), amo(N,C), aloCityPerInterest.
+writeClauses.
 
 aloCityPerInterest:- interessos(Ints), member(Int, Ints), findall(C, ( atractius(C,A), member(Int,A) ), Lits), exactlyOne(Lits), fail.
 aloCityPerInterest.              
@@ -28,14 +40,25 @@ nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).
 % ========== No need to change the following: =====================================
 
 main:- symbolicOutput(1), !, writeClauses, halt. % escribir bonito, no ejecutar
-main:-  assert(numClauses(0)), assert(numVars(0)),
-	tell(clauses), writeClauses, told,
-	tell(header),  writeHeader,  told,
-	unix('cat header clauses > infile.cnf'),
-	unix('picosat -v -o model infile.cnf'),
-	unix('cat model'),
-	see(model), readModel(M), seen, displaySol(M),
-	halt.
+main:- assert(primero), mai2.
+mai2:-  checkfirst, retractall(numClauses(_)),
+    assert(numClauses(0)),    
+    unix('rm header clauses infile.cnf'),
+    tell(clauses), writeClauses, told,
+    tell(header),  writeHeader,  told,
+    unix('cat header clauses > infile.cnf'),
+    unix('picosat -v -o model infile.cnf'),
+    unix('cat model'),
+    see(model), readModel(M), seen, displaySol(M),
+    check(M),
+    halt.
+   
+checkfirst:- primero, retract(primero), assert(numVars(0)), assert(maxCiudades(1)).
+checkfirst.
+ 
+check(_):- maxCiudades(M), ciutats(C), length(C,LC), M>LC, halt.
+check([]):- maxCiudades(M), M1 is M+1, retract(maxCiudades(M)), assert(maxCiudades(M1)), mai2, !.
+check(_):- halt.
 
 var2num(T,N):- hash_term(T,Key), varNumber(Key,T,N),!.
 var2num(T,N):- retract(numVars(N0)), N is N0+1, assert(numVars(N)), hash_term(T,Key),
