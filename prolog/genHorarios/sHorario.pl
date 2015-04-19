@@ -146,7 +146,30 @@ nums2vars([], []).
 nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R).
 
   
+% ========= Dani
 
+displaySol(M):- unix('clear'), nums2vars(M,Ms), numCursos(NC),
+	between(1,NC,C), nl, write('Curs '), write(C), write(':'), assig(C,I,_,_,_),
+	nl, write('Assignatura '), write(I), write(': '), member(p-I-P, Ms),
+	write('professor '), write(P), member(a-I-A, Ms), write(', aula '),
+	write(A), write('.'), fail.
+displaySol(N):- nums2vars(N,Ms), numCursos(NC), between(1,NC,C), nl,
+	write('-----------------------------------------------------------'), nl,
+	nl, write('Curs '), write(C), write(':'), nl,
+	write('-----------------------------------------------------------'), nl,
+	write('|        |  Dia 1  |  Dia 2  |  Dia 3  |  Dia 4  |  Dia5  |'), nl,
+	between(1,12,Hor), Hora is Hor+7, nl,
+	write('-----------------------------------------------------------'), nl,
+	write('|Hora '), write(Hora), write('  |'), numDies(ND), between(1,ND,D),
+	H is Hor+(12*(D-1)), writeCondicional(C,H,Ms), fail.
+displaySol(_):- nl.
+writeCondicional(C,H,Ms):- assig(C,I,_,_,_), member(h-I-H, Ms), !,
+	write('    '), write(I), write('    |').
+writeCondicional(_,_,_):- write('         |').
+nums2vars([], []).
+nums2vars([Nv|S],[X|R]):- num2var(Nv,X), nums2vars(S, R)
+
+% ===========
 
 
 % ========== No need to change the following: =====================================
