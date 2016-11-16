@@ -92,14 +92,14 @@ horasProhibidasPorProf:- horesProhibides(P,Hs), assig(_,A,_,_,Ps), member(P,Ps),
 horasProhibidasPorProf.
 
 noCoincidenProf:- asig(A1), asig(A2), A1<A2, hora(H), prof(P), 
-                   assig(_,A1,_,Ps1,_), member(P,Ps1),
-                   assig(_,A2,_,Ps2,_), member(P,Ps2),  
+                   assig(_,A1,_,_,Ps1), member(P,Ps1),
+                   assig(_,A2,_,_,Ps2), member(P,Ps2),  
                    writeClause( [\+ah-A1-H, \+ah-A2-H, \+ap-A1-P, \+ap-A2-P] ), fail.
 noCoincidenProf.
 
 noCoincidenAulas:- asig(A1), asig(A2), A1<A2, hora(H), aula(U), 
-                   assig(_,A1,_,_,Us1), member(U,Us1),
-                   assig(_,A2,_,_,Us2), member(U,Us2),  
+                   assig(_,A1,_,Us1,_), member(U,Us1),
+                   assig(_,A2,_,Us2,_), member(U,Us2),  
                    writeClause( [\+ah-A1-H, \+ah-A2-H, \+au-A1-U, \+au-A2-U] ), fail.
 noCoincidenAulas.
 
